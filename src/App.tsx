@@ -37,62 +37,133 @@ const AlgoText = ({ text, className = '', delay = 0 }: { text: string, className
   return <span className={`inline-block ${className}`}>{displayText || ' '}</span>;
 };
 
-// Animated matrix background of tiny calculating nodes
-const PixelGridBackground = () => {
+// Interactive Finite Element / Structural Network Background
+const InteractiveStructuralBackground = () => {
+  useEffect(() => {
+    const canvas = document.getElementById('structural-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const nodes: { x: number, y: number, vx: number, vy: number }[] = [];
+    const numNodes = Math.floor((width * height) / 12000); // Density of structural nodes
+
+    for (let i = 0; i < numNodes; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+      });
+    }
+
+    const mouse = { x: -1000, y: -1000 };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseout', handleMouseLeave);
+
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    };
+    window.addEventListener('resize', handleResize);
+
+    let animationId: number;
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Update nodes
+      nodes.forEach(node => {
+        node.x += node.vx;
+        node.y += node.vy;
+
+        if (node.x < 0 || node.x > width) node.vx *= -1;
+        if (node.y < 0 || node.y > height) node.vy *= -1;
+      });
+
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i < nodes.length; i++) {
+        const nodeA = nodes[i];
+
+        // Connect member to mouse cursor
+        const dxMouse = nodeA.x - mouse.x;
+        const dyMouse = nodeA.y - mouse.y;
+        const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+
+        if (distMouse < 250) {
+          ctx.beginPath();
+          ctx.moveTo(nodeA.x, nodeA.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          // Stronger connection to the cursor
+          ctx.strokeStyle = `rgba(0, 255, 204, ${(1 - distMouse / 250) * 0.8})`;
+          ctx.stroke();
+        }
+
+        // Connect members to each other (Space Frame simulation)
+        for (let j = i + 1; j < nodes.length; j++) {
+          const nodeB = nodes[j];
+          const dx = nodeA.x - nodeB.x;
+          const dy = nodeA.y - nodeB.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(nodeA.x, nodeA.y);
+            ctx.lineTo(nodeB.x, nodeB.y);
+            ctx.strokeStyle = `rgba(0, 255, 204, ${(1 - dist / 150) * 0.25})`;
+            ctx.stroke();
+          }
+        }
+
+        // Draw structural joint (node)
+        ctx.beginPath();
+        // Square joints for pixel aesthetic
+        ctx.rect(nodeA.x - 1.5, nodeA.y - 1.5, 3, 3);
+        ctx.fillStyle = 'rgba(0, 255, 204, 0.5)';
+        ctx.fill();
+      }
+
+      animationId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseout', handleMouseLeave);
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none opacity-20 overflow-hidden">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div className="absolute inset-0 bg-[#020617] z-[-1]"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-      {/* Structural Network Lines (Graph/Truss representation) */}
-      <svg className="absolute inset-0 w-full h-full opacity-30">
-        <motion.path
-          d="M 10% 20% L 30% 40% L 20% 80% L 50% 60% L 80% 30% L 90% 70%"
-          fill="none"
-          stroke="rgba(0,255,204,0.3)"
-          strokeWidth="1"
-          strokeDasharray="10 5"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.path
-          d="M 30% 40% L 50% 60% M 20% 80% L 80% 30%"
-          fill="none"
-          stroke="rgba(0,255,204,0.15)"
-          strokeWidth="1"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 2 }}
-        />
-      </svg>
-      {/* Floating algorithmic nodes */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-8 h-8 bg-cyan-400/5 mix-blend-screen"
-          initial={{
-            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
-            opacity: 0,
-            scale: 0.5
-          }}
-          animate={{
-            y: [null, Math.random() * -100 - 50],
-            opacity: [0, 0.4, 0],
-            scale: [0.5, 1, 0.5]
-          }}
-          transition={{
-            duration: Math.random() * 5 + 5,
-            repeat: Infinity,
-            delay: Math.random() * 5,
-            ease: "linear"
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/80 to-[#020617]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+      <canvas id="structural-canvas" className="absolute inset-0 w-full h-full opacity-60 mix-blend-screen" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/50 to-[#020617]" />
     </div>
   );
-}
+};
 
 export default function App() {
   const { scrollYProgress } = useScroll();
@@ -100,7 +171,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 font-sans selection:bg-cyan-500/30 relative overflow-hidden">
-      <PixelGridBackground />
+      <InteractiveStructuralBackground />
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-cyan-900/30">
@@ -144,7 +215,7 @@ export default function App() {
             >
               <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-cyan-950/30 border-l-2 border-cyan-500 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
                 <Grid3X3 className="w-4 h-4" />
-                <span>Freelance Engineering & Architecture</span>
+                <span>High-Rise Structural Design & Automation</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-6 leading-[1] uppercase">
@@ -335,33 +406,33 @@ export default function App() {
               {[
                 {
                   icon: <Building2 className="w-6 h-6" />,
-                  title: "Structural Logic",
-                  desc: "RC/PT Design, Eurocode/BS Standards. Designing and reviewing structures for high-rise mixed developments and LRT projects in Singapore and Taiwan."
+                  title: "High-Rise RC/PT Design",
+                  desc: "Eurocode & BS Standards. Engineering tall structures, shear walls, and core walls for mixed developments and LRT projects. Precision lateral load routing (Wind & Seismic)."
                 },
                 {
                   icon: <Code2 className="w-6 h-6" />,
-                  title: "Computational Automation",
-                  desc: "Developing custom AutoLisp scripts for ETABS/AutoCAD integration and engineering Excel-based tools to accelerate design processes."
+                  title: "Algorithmic Detailing",
+                  desc: "Custom AutoLisp scripts bridging ETABS analysis directly with AutoCAD drafting. Generating immediate structural nodes and pixel-perfect steel reinforcement plans."
                 },
                 {
                   icon: <Cpu className="w-6 h-6" />,
-                  title: "AI Workflow Automation",
-                  desc: "Utilizing OpenAI GPT/Gemini alongside engineering software to streamline tasks, analyze data, and build intelligent solutions."
+                  title: "AI Structural Agents",
+                  desc: "Automating finite element modeling loops using OpenAI GPT/Gemini. Parsing analysis data, extracting forces, and streamlining repetitive engineering computation."
                 },
                 {
                   icon: <Droplets className="w-6 h-6" />,
-                  title: "Water Supply Systems",
-                  desc: "Water reticulation design and authority submissions (KM/PBA). Secured 10+ approvals within 6 months for complex projects."
+                  title: "Fluid & Hydraulic Systems",
+                  desc: "Complex water reticulation design and authority submissions (KM/PBA). Managing pump head calculations and distributing massive hydrostatic loads."
                 },
                 {
                   icon: <LineChart className="w-6 h-6" />,
-                  title: "Project Management",
-                  desc: "Leading teams of 7+ juniors, managing multi-sector projects (residential, commercial, industrial), and coordinating authority submissions."
+                  title: "Optimization Matrices",
+                  desc: "Excel-based engineered tools utilizing matrix structural analysis to accelerate corewall and post-tensioned slab designs by 40%."
                 },
                 {
                   icon: <Layers className="w-6 h-6" />,
-                  title: "Advanced Software",
-                  desc: "Expertise in Revit (BIM), ETABS, SAP2000, AdaptPT, AutoCAD (Lisp), WordPress, and Adobe Creative Suite."
+                  title: "BIM & Structural Stacks",
+                  desc: "Deep expertise in Revit (BIM), ETABS, SAP2000, AdaptPT, and SAFE. Mapping physical geometry into rigorous 3D finite element solvers."
                 }
               ].map((item, i) => (
                 <motion.div
