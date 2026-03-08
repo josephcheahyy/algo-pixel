@@ -277,20 +277,10 @@ const InteractiveModelBuilder = () => {
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  const [rotX, setRotX] = useState(0);
+  const [rotX, setRotX] = useState(60);
   const [rotY, setRotY] = useState(0);
 
-  // Auto rotation
-  useEffect(() => {
-    let animationId: number;
-    const animate = () => {
-      setRotX(prev => prev + 0.3);
-      setRotY(prev => prev + 0.6);
-      animationId = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => cancelAnimationFrame(animationId);
-  }, []);
+  // Auto-rotation removed per request "stay where they are"
 
   // 8 Second Timer Logic
   useEffect(() => {
@@ -754,19 +744,6 @@ export default function App() {
       <nav className="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-cyan-900/30">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {/* User Logo with gradient fade */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-14 h-14 relative flex items-center justify-center cursor-pointer overflow-hidden rounded-sm bg-gradient-to-b from-white via-white/80 to-[#020617]"
-              style={{ maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
-            >
-              <img
-                src="/algo-pixel/algo-pixel-logo.jpg"
-                alt="Algo Pixel Empire Logo"
-                className="w-[90%] h-[90%] object-cover mix-blend-multiply"
-              />
-            </motion.div>
             <div className="hidden sm:flex flex-col">
               <span className="font-mono font-bold text-white text-lg leading-none tracking-tight">ALGO PIXEL EMPIRE</span>
               <a href="https://www.linkedin.com/in/josephcheah-intj-generalist/" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] tracking-widest text-cyan-500 hover:text-cyan-300 transition-colors">JOSEPH CHEAH // FOUNDER</a>
@@ -791,6 +768,10 @@ export default function App() {
               transition={{ duration: 0.8 }}
               className="max-w-4xl"
             >
+              <div className="mb-4 w-32 h-32 md:w-40 md:h-40 relative -ml-2 select-none pointer-events-none">
+                <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-[120%] h-[120%] object-contain" style={{ maskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)', WebkitMaskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)' }} />
+              </div>
+
               <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-cyan-950/30 border-l-2 border-cyan-500 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
                 <Grid3X3 className="w-4 h-4" />
                 <span>Civil & Structure Analysis | Graphic Design | AI Automation</span>
@@ -809,17 +790,10 @@ export default function App() {
 
               <div className="flex flex-col gap-6 font-mono text-sm">
                 <div className="flex flex-wrap gap-4">
-                  <motion.a
-                    whileHover={{ scale: 1.05, backgroundColor: "#06b6d4", color: "#000" }}
-                    whileTap={{ scale: 0.95 }}
-                    href="https://www.upwork.com/services/product/design-a-full-set-of-residential-rc-design-report-and-3d-model-2029193254216635191?ref=project_share&tier=1"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 transition-all relative overflow-hidden group w-max"
-                  >
-                    <span className="relative z-10 font-bold uppercase tracking-wider">Work With Algo Pixel Now</span>
-                    <div className="absolute inset-0 bg-cyan-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 z-0"></div>
-                  </motion.a>
+                  <SafeInteractiveButton
+                    url="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
+                    text="Work With Algo Pixel Now"
+                  />
                 </div>
 
                 {/* Safe Social Links will be mounted here */}
