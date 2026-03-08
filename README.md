@@ -1,20 +1,60 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Joseph Profile
 
-# Run and deploy your AI Studio app
+A modern, fast, and responsive React web application built as a professional profile.
 
-This contains everything you need to run your app locally.
+## Overview
 
-View your app in AI Studio: https://ai.studio/apps/0209102d-0abb-4d70-a076-199aecada08a
+This project is built using:
 
-## Run Locally
+- **React 19** for UI components
+- **Vite** for fast, optimized builds
+- **Tailwind CSS** for styling
+- **TypeScript** for type-safe development
 
-**Prerequisites:**  Node.js
+## Setup Instructions
 
+### Prerequisites
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Node.js (v18 or higher recommended)
+
+### Local Development
+
+1. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+2. **Environment Variables:**
+   Copy `.env.example` to `.env.local` and fill in necessary keys (e.g., `GEMINI_API_KEY`).
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. **Start the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+   The site will be available on port 3000 (or the next available port).
+
+### Building for Production
+
+Compile the code and build the project for production:
+
+```bash
+npm run build
+```
+
+The output will be generated in the `dist` directory.
+
+## Deployment (GitHub Actions)
+
+This project is configured with a continuous integration/continuous deployment (CI/CD) pipeline via GitHub Actions.
+
+- Whenever code is pushed to the `main` or `master` branch, the `Deploy to GitHub Pages` workflow is automatically triggered.
+- It installs the dependencies, builds the project, and deploys the generated `dist` folder directly to GitHub Pages.
+
+To ensure this works on your repository, make sure that **GitHub Pages is enabled** in your repository settings, with the source set to **GitHub Actions**.
