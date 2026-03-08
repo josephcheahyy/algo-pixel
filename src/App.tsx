@@ -43,7 +43,29 @@ const PixelGridBackground = () => {
     <div className="fixed inset-0 z-0 pointer-events-none opacity-20 overflow-hidden">
       <div className="absolute inset-0 bg-[#020617] z-[-1]"></div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-      {/* Floating pixel squares */}
+      {/* Structural Network Lines (Graph/Truss representation) */}
+      <svg className="absolute inset-0 w-full h-full opacity-30">
+        <motion.path
+          d="M 10% 20% L 30% 40% L 20% 80% L 50% 60% L 80% 30% L 90% 70%"
+          fill="none"
+          stroke="rgba(0,255,204,0.3)"
+          strokeWidth="1"
+          strokeDasharray="10 5"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.path
+          d="M 30% 40% L 50% 60% M 20% 80% L 80% 30%"
+          fill="none"
+          stroke="rgba(0,255,204,0.15)"
+          strokeWidth="1"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 2 }}
+        />
+      </svg>
+      {/* Floating algorithmic nodes */}
       {Array.from({ length: 20 }).map((_, i) => (
         <motion.div
           key={i}
@@ -151,14 +173,60 @@ export default function App() {
               </div>
             </motion.div>
 
-            {/* Geometric Hero Decoration */}
+            {/* Structural FEA / Wireframe Decoration */}
             <motion.div
               style={{ y: yOffset }}
-              className="absolute right-0 top-0 -z-10 hidden lg:block opacity-60"
+              className="absolute right-0 top-1/2 -translate-y-1/2 -z-10 hidden lg:block opacity-80 w-[500px] h-[500px] pointer-events-none"
             >
-              <div className="w-[400px] h-[400px] border border-cyan-500/20 relative flex items-center justify-center">
-                <div className="w-[300px] h-[300px] border border-cyan-500/40 rotate-45 transform transition-transform duration-[10000ms] ease-linear hover:rotate-90"></div>
-                <div className="w-[200px] h-[200px] bg-cyan-500/5 absolute mix-blend-screen shadow-[0_0_50px_rgba(6,182,212,0.2)]"></div>
+              <div className="relative w-full h-full flex items-center justify-center" style={{ perspective: '1000px' }}>
+                <motion.div
+                  animate={{ rotateX: [0, 360], rotateY: [0, 360] }}
+                  transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                  className="w-[300px] h-[300px] border border-cyan-500/30 relative"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(150px)' }}></div>
+                  <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(-150px)' }}></div>
+                  {/* Connectors */}
+                  <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateX(90deg) translateZ(150px)' }}></div>
+                  <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateY(90deg) translateZ(150px)' }}></div>
+
+                  {/* Finite Element Cross Bracing (Diagonal Members) */}
+                  <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ transform: 'translateZ(150px)' }}>
+                    <line x1="0" y1="0" x2="300" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
+                    <line x1="300" y1="0" x2="0" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
+                  </svg>
+                  <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ transform: 'translateZ(-150px)' }}>
+                    <line x1="0" y1="0" x2="300" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
+                    <line x1="300" y1="0" x2="0" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
+                  </svg>
+
+                  {/* Nodes (Joints) */}
+                  <div className="absolute top-0 left-0 w-3 h-3 bg-cyan-400 -translate-x-1.5 -translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 bg-cyan-400 translate-x-1.5 -translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 bg-cyan-400 -translate-x-1.5 translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-cyan-400 translate-x-1.5 translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
+                </motion.div>
+
+                {/* Orbiting Structural Data Points */}
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={`orb-${i}`}
+                    className="absolute w-2 h-2 border border-cyan-300 bg-black mix-blend-screen"
+                    animate={{
+                      rotate: [0, 360],
+                      scale: [1, 1.5, 1]
+                    }}
+                    transition={{
+                      rotate: { duration: 10 + i * 2, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 2, repeat: Infinity, repeatType: 'reverse' }
+                    }}
+                    style={{
+                      originX: `${(i % 2 === 0 ? 150 : -150)}px`,
+                      originY: `${(i % 3 === 0 ? 150 : -150)}px`,
+                    }}
+                  />
+                ))}
               </div>
             </motion.div>
           </div>
@@ -302,16 +370,25 @@ export default function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="bg-[#020617] p-8 border border-cyan-900/40 hover:border-cyan-400 group relative transition-colors duration-300"
+                  className="bg-[#020617] p-8 border border-cyan-900/40 hover:border-cyan-400 group relative transition-colors duration-300 overflow-hidden"
                 >
-                  {/* Hover scanline effect */}
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  {/* Hover structural scanline effect */}
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+                  <div className="absolute bottom-0 right-0 w-full h-[2px] bg-cyan-400 translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+                  <div className="absolute top-0 left-0 w-[2px] h-full bg-cyan-400 -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                  <div className="absolute bottom-0 right-0 w-[2px] h-full bg-cyan-400 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
 
-                  <div className="text-cyan-600 mb-6 group-hover:text-cyan-400 transition-colors">
+                  {/* Matrix/Pixel background on hover */}
+                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDBGRkNDIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  <div className="relative z-10 text-cyan-600 mb-6 group-hover:text-cyan-400 transition-colors drop-shadow-[0_0_8px_rgba(0,255,204,0)] group-hover:drop-shadow-[0_0_8px_rgba(0,255,204,0.5)]">
                     {item.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-white uppercase tracking-tight">{item.title}</h3>
-                  <p className="text-slate-400 leading-relaxed text-sm font-light">{item.desc}</p>
+                  <h3 className="relative z-10 text-xl font-bold mb-3 text-white uppercase tracking-tight flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-500/50 group-hover:bg-cyan-400 block transition-colors" />
+                    {item.title}
+                  </h3>
+                  <p className="relative z-10 text-slate-400 leading-relaxed text-sm font-light group-hover:text-slate-300 transition-colors">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
