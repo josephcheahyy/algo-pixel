@@ -196,8 +196,9 @@ const InteractiveStructuralBackground = () => {
 // Interactive 3D Voxel Builder Component
 const InteractiveModelBuilder = () => {
   const [cubes, setCubes] = useState<{ x: number, y: number, z: number, id: number }[]>([]);
-  const [message, setMessage] = useState("CLICK TO MODEL STRUCTURE");
+  const [message, setMessage] = useState("DRAG TO DRAW AN OBJECT HERE");
   const [isFading, setIsFading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [rotX, setRotX] = useState(0);
   const [rotY, setRotY] = useState(0);
 
@@ -219,14 +220,14 @@ const InteractiveModelBuilder = () => {
 
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
-      setMessage("MODELING COSTS EFFORT.");
+      setMessage("MODELING COSTS EFFORT...");
 
       setTimeout(() => {
-        setMessage("BUT LET US DO IT.");
+        setMessage("BUT LET ALGO PIXEL DO IT FOR YOU.");
         setTimeout(() => {
           setCubes([]);
           setIsFading(false);
-          setMessage("CLICK TO MODEL STRUCTURE");
+          setMessage("DRAG TO DRAW AN OBJECT HERE");
         }, 3000);
       }, 2000);
     }, 8000); // 8 seconds after first cube is placed
@@ -234,38 +235,66 @@ const InteractiveModelBuilder = () => {
     return () => clearTimeout(fadeTimer);
   }, [cubes.length === 0]); // Only trigger when we go from 0 to 1+
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const addCube = (clientX: number, clientY: number) => {
     if (isFading) return;
+    const target = document.getElementById('model-builder-container');
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
 
-    // Calculate relative click position
-    const rect = e.currentTarget.getBoundingClientRect();
-    // Map to a grid (-2 to 2)
-    const x = Math.round(((e.clientX - rect.left) / rect.width - 0.5) * 4);
-    const y = Math.round(((e.clientY - rect.top) / rect.height - 0.5) * 4);
+    // Map to a grid (-3 to 3 to have more density)
+    const x = Math.round(((clientX - rect.left) / rect.width - 0.5) * 6);
+    const y = Math.round(((clientY - rect.top) / rect.height - 0.5) * 6);
 
-    // Add new cube at click position with random z depth
-    const newCube = {
-      x: x * 40,
-      y: y * 40,
-      z: (Math.random() - 0.5) * 100,
-      id: Date.now() + Math.random()
-    };
+    // Scale by 30px per block
+    const newCubeX = x * 30;
+    const newCubeY = y * 30;
 
-    setCubes(prev => [...prev, newCube]);
-    if (message === "CLICK TO MODEL STRUCTURE") {
-      setMessage("INJECTING STRUCTURAL ELEMENTS...");
-    }
+    setCubes(prev => {
+      // Prevent adding identical cubes in the same position
+      const isDuplicate = prev.some(c => c.x === newCubeX && c.y === newCubeY);
+      if (isDuplicate) return prev;
+
+      if (message === "DRAG TO DRAW AN OBJECT HERE") {
+        setMessage("INJECTING STRUCTURAL ELEMENTS...");
+      }
+
+      return [...prev, {
+        x: newCubeX,
+        y: newCubeY,
+        z: (Math.random() - 0.5) * 100,
+        id: Date.now() + Math.random()
+      }];
+    });
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isFading) return;
+    setIsDragging(true);
+    addCube(e.clientX, e.clientY);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || isFading) return;
+    addCube(e.clientX, e.clientY);
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
   };
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto">
       {/* 3D Container */}
       <div
-        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group"
-        style={{ perspective: '1000px' }}
-        onClick={handleCanvasClick}
+        id="model-builder-container"
+        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none"
+        style={{ perspective: '1000px', touchAction: 'none' }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
       >
-        <div className="absolute top-2 left-2 font-mono text-[10px] text-cyan-400/50">
+        <div className="absolute top-2 left-2 font-mono text-[10px] text-cyan-400/50 pointer-events-none">
           X: {(rotX % 360).toFixed(1)}° <br />
           Y: {(rotY % 360).toFixed(1)}°
         </div>
