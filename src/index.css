@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@layer components {
+  .logo-glitch {
+    animation: glitch-invert 3s infinite;
+  }
+}
+
+@keyframes glitch-invert {
+  0%, 9%, 11%, 19%, 21%, 69%, 71%, 100% {
+    filter: invert(0);
+    background-color: white;
+  }
+  10%, 20%, 70% {
+    filter: invert(1);
+    background-color: black;
+  }
+}

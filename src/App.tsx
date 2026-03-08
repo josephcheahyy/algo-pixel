@@ -278,9 +278,20 @@ const InteractiveModelBuilder = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [rotX, setRotX] = useState(60);
-  const [rotY, setRotY] = useState(0);
+  const [rotY, setRotY] = useState(45);
 
-  // Auto-rotation removed per request "stay where they are"
+  useEffect(() => {
+    let animationId: number;
+    const animate = () => {
+      setRotX(prev => prev + 0.3);
+      setRotY(prev => prev + 0.6);
+      animationId = requestAnimationFrame(animate);
+    };
+    if (!dragStart) {
+      animate();
+    }
+    return () => cancelAnimationFrame(animationId);
+  }, [dragStart]);
 
   // 8 Second Timer Logic
   useEffect(() => {
@@ -366,7 +377,7 @@ const InteractiveModelBuilder = () => {
         const cdy = coords.y - firstPoint.y;
         const screenCx = firstPoint.x + cdx / 2;
         const screenCy = firstPoint.y + cdy / 2;
-        const tempZ = (Math.random() - 0.5) * 100;
+        const tempZ = 0;
 
         let type: 'beam' | 'column' = Math.abs(cdx) > Math.abs(cdy) ? 'beam' : 'column';
         let w = type === 'beam' ? Math.max(Math.abs(cdx), 20) : 16;
@@ -389,9 +400,9 @@ const InteractiveModelBuilder = () => {
       // It was a drag: Logic for Area drawing (Slabs / Footings)
       const screenCx = dragStart.x + dx / 2;
       const screenCy = dragStart.y + dy / 2;
-      const tempZ = (Math.random() - 0.5) * 100;
+      const tempZ = 0;
 
-      let type: 'slab' | 'node' = 'node';
+      let type: 'slab' = 'slab';
       let w = 20, h = 20, d = 20;
 
       if (absDx > 20 && absDy > 20) {
@@ -510,8 +521,8 @@ const InteractiveModelBuilder = () => {
         {/* 2D Analysis Overlays decoupled from rotation so text isnt cropped heavily either */}
         <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
           {elements.map((el) => {
-            const analysisValue = (el.h * el.w * 0.1).toFixed(1);
-            const analysisType = el.type === 'column' ? 'Axial: ' : el.type === 'beam' ? 'Moment: ' : 'Shear: ';
+            const analysisValue = (Math.random() * 500).toFixed(1);
+            const analysisType = Math.random() > 0.5 ? 'Shear: ' : 'Moment: ';
             const screenX = 150 + el.x + el.w / 2 + 20;
             const screenY = 150 + el.y - el.h / 2 - 20;
             return (
@@ -768,8 +779,8 @@ export default function App() {
               transition={{ duration: 0.8 }}
               className="max-w-4xl"
             >
-              <div className="mb-4 w-32 h-32 md:w-40 md:h-40 relative -ml-2 select-none pointer-events-none">
-                <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-[120%] h-[120%] object-contain" style={{ maskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)', WebkitMaskImage: 'radial-gradient(circle at center, black 45%, transparent 70%)' }} />
+              <div className="mb-8 w-24 h-24 md:w-32 md:h-32 relative overflow-hidden">
+                <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-full h-full object-cover" />
               </div>
 
               <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-cyan-950/30 border-l-2 border-cyan-500 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
@@ -777,12 +788,14 @@ export default function App() {
                 <span>Civil & Structure Analysis | Graphic Design | AI Automation</span>
               </div>
 
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-6 leading-[1] uppercase">
-                <AlgoText text="Joseph Cheah" delay={300} /><br />
-                <span className="text-cyan-500 block mt-2">
-                  <AlgoText text="Algo Pixel Empire" delay={800} />
-                </span>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-cyan-500/80 mb-2 leading-none uppercase">
+                <AlgoText text="ALGO PIXEL EMPIRE" delay={300} />
               </h1>
+              <h2 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter text-white mb-6 leading-none uppercase drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <span>
+                  <AlgoText text="JOSEPH CHEAH" delay={800} />
+                </span>
+              </h2>
 
               <p className="text-base md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl font-light border-l border-white/10 pl-4">
                 Our expertise lies in using computational automation to accelerate structural engineering while maintaining the aesthetic precision required for modern design.
@@ -829,33 +842,25 @@ export default function App() {
                   <Braces className="w-4 h-4" /> 01 // Data-To-Solution Protocol
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-6 uppercase">
-                  Logic over <br /> Brute Force.
+                  The Bridge Between Logic & Aesthetics
                 </h2>
                 <div className="space-y-6 text-slate-400 font-light text-lg">
                   <p>
-                    My philosophy is absolute efficiency: integrate engineering design with <strong className="text-cyan-400">digital tools and data-driven decision-making</strong> to drive project velocity and precision.
+                    Modern engineering suffers from massive repetitive friction. We eliminate it by connecting powerful analytical models like ETABS and SAFE to custom pipeline automations and AI.
                   </p>
                   <p>
                     As a Civil & Structural Engineer with 4+ years of experience specializing in high-rise design and water supply systems, I operate at the intersection of <strong className="text-white">Structural Engineering, Computational Design, and AI Automation</strong>.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-8 gap-y-10 mt-12">
-                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">80<span className="text-cyan-500">%</span></div>
-                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Faster Modeling</div>
+                <div className="flex gap-8 pt-4 border-t border-cyan-900/30">
+                  <div>
+                    <div className="text-3xl font-black text-cyan-400 mb-1">30%</div>
+                    <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">Faster Modeling</div>
                   </div>
-                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">30<span className="text-cyan-500">%</span></div>
-                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Design Faster with Algorithm</div>
-                  </div>
-                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">10<span className="text-cyan-500">+</span></div>
-                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Water Supply Approvals</div>
-                  </div>
-                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">1<span className="text-cyan-500">st</span></div>
-                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Class Honors Civil Eng.</div>
+                  <div>
+                    <div className="text-3xl font-black text-cyan-400 mb-1">80%</div>
+                    <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">Design Automation</div>
                   </div>
                 </div>
               </motion.div>
@@ -1036,7 +1041,7 @@ export default function App() {
                   </div>
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    High-velocity computational scripts engineered to map ETABS physics analysis directly to AutoCAD drafting nodes. Accelerating deployment models by 40%.
+                    Custom automation routines directly reducing repetitive AutoCAD drafting tasks for consultants. Eliminates manual errors and accelerates drawing deployment natively.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">AutoLISP</span>
@@ -1102,8 +1107,8 @@ export default function App() {
                     <img src="/algo-pixel/service_4.png" alt="Research & Data" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
                   </div>
 
-                  <p className="text-slate-400 text-sm leading-relaxed mb-4 font-light max-w-sm">
-                    In-depth technical analysis spanning structural behavior, digital transformations, and experimental data extrapolation.
+                  <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
+                    Integrated visual analysis. Streamlines massive engineering datasets matching complex physics loads instantly to safety checks into one concise decision matrix.
                   </p>
                   {/* Embedded Paper Block */}
                   <div className="mt-4 p-4 border border-cyan-500/30 bg-black/50">
