@@ -1,11 +1,11 @@
 import { motion } from 'motion/react';
-import { 
-  Building2, 
-  Cpu, 
-  LineChart, 
-  Droplets, 
-  Code2, 
-  FileSpreadsheet, 
+import {
+  Building2,
+  Cpu,
+  LineChart,
+  Droplets,
+  Code2,
+  FileSpreadsheet,
   BookOpen,
   ArrowRight,
   Mail,
@@ -21,7 +21,7 @@ export default function App() {
     <div className="min-h-screen bg-[#030303] text-zinc-300 font-sans selection:bg-cyan-500/30 relative overflow-hidden">
       {/* Futuristic Grid Background */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      
+
       {/* Ambient Glows */}
       <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-900/20 blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/20 blur-[120px] pointer-events-none z-0" />
@@ -101,11 +101,11 @@ export default function App() {
                 <p className="text-zinc-400 leading-relaxed mb-12 font-light text-lg">
                   With over 4 years of experience in high-rise design and water supply systems, I've led teams and managed multi-sector projects. My focus lies at the intersection of Structural Engineering, Computational Design, and AI Automation.
                 </p>
-                
+
                 <div className="grid grid-cols-2 gap-x-8 gap-y-10">
                   <div className="border-l border-cyan-500/30 pl-4">
-                    <div className="text-4xl font-bold text-white mb-2 font-mono">80<span className="text-cyan-500">%</span></div>
-                    <div className="text-sm text-zinc-500 font-mono uppercase tracking-wider">Faster ETABS Modeling</div>
+                    <div className="text-4xl font-bold text-white mb-2 font-mono">40<span className="text-cyan-500">%</span></div>
+                    <div className="text-sm text-zinc-500 font-mono uppercase tracking-wider">Faster Modeling</div>
                   </div>
                   <div className="border-l border-cyan-500/30 pl-4">
                     <div className="text-4xl font-bold text-white mb-2 font-mono">40<span className="text-cyan-500">%</span></div>
@@ -121,7 +121,7 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -131,14 +131,13 @@ export default function App() {
               >
                 <div className="aspect-square rounded-lg bg-zinc-900 overflow-hidden relative border border-white/10">
                   <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-                  <img 
-                    src="https://picsum.photos/seed/cyberpunk/800/800" 
-                    alt="Engineering Workspace" 
-                    className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
-                    referrerPolicy="no-referrer"
+                  <img
+                    src="/algo-pixel/bim_tech.png"
+                    alt="BIM and Technology"
+                    className="w-full h-full object-cover opacity-60 mix-blend-luminosity"
                   />
                   <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent mix-blend-overlay" />
-                  
+
                   {/* Tech overlay elements */}
                   <div className="absolute top-4 right-4 font-mono text-[10px] text-cyan-500/50 text-right">
                     <div>SYS.COORD: 3.14159</div>
@@ -192,7 +191,7 @@ export default function App() {
                   desc: "Expertise in Revit (BIM), ETABS, SAP2000, AdaptPT, AutoCAD (Lisp), WordPress, and Adobe Creative Suite."
                 }
               ].map((item, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -201,7 +200,7 @@ export default function App() {
                   className="bg-white/[0.02] p-8 rounded-lg border border-white/5 hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all group relative overflow-hidden"
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-500" />
-                  
+
                   <div className="w-10 h-10 rounded bg-black border border-white/10 flex items-center justify-center text-zinc-400 mb-6 group-hover:text-cyan-400 group-hover:border-cyan-500/30 transition-colors">
                     {item.icon}
                   </div>
@@ -224,7 +223,7 @@ export default function App() {
 
             <div className="grid lg:grid-cols-12 gap-6">
               {/* Featured Product */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -232,7 +231,7 @@ export default function App() {
                 className="lg:col-span-12 bg-white/[0.02] border border-white/10 rounded-lg p-8 md:p-12 relative overflow-hidden group"
               >
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 group-hover:bg-cyan-500/20 transition-colors duration-700 pointer-events-none" />
-                
+
                 <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
                   <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
@@ -256,9 +255,9 @@ export default function App() {
                   </div>
                   <div className="aspect-video rounded bg-[#050505] border border-white/10 overflow-hidden relative p-1">
                     <div className="w-full h-full border border-white/5 rounded-sm overflow-hidden relative">
-                      <img 
-                        src="https://picsum.photos/seed/ai-interface/800/450" 
-                        alt="AI Interface" 
+                      <img
+                        src="https://picsum.photos/seed/ai-interface/800/450"
+                        alt="AI Interface"
                         className="w-full h-full object-cover opacity-60 mix-blend-luminosity"
                         referrerPolicy="no-referrer"
                       />
@@ -274,7 +273,7 @@ export default function App() {
               </motion.div>
 
               {/* Other Products */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -295,7 +294,7 @@ export default function App() {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -315,7 +314,7 @@ export default function App() {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -355,7 +354,7 @@ export default function App() {
                   Initialize Comm Link
                 </a>
               </div>
-              
+
               <div className="bg-white/[0.02] p-8 rounded-lg border border-white/10">
                 <h3 className="font-mono text-sm text-zinc-500 uppercase tracking-widest mb-6">Network Nodes</h3>
                 <div className="space-y-4">
@@ -380,7 +379,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10 text-xs font-mono text-zinc-600 uppercase tracking-widest">
               <p>© {new Date().getFullYear()} Joseph Cheah. All rights reserved.</p>
               <div className="flex items-center gap-4 mt-4 md:mt-0">
