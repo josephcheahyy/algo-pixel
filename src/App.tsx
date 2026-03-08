@@ -458,17 +458,18 @@ export default function App() {
       <nav className="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-cyan-900/30">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Logo Placeholder */}
+            {/* User Logo */}
             <motion.div
-              whileHover={{ rotate: 90 }}
-              transition={{ type: "spring", stiffness: 300, damping: 10 }}
-              className="w-10 h-10 border-2 border-cyan-500 flex flex-wrap p-1 gap-0.5 items-center justify-center relative cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-12 h-12 relative flex items-center justify-center cursor-pointer border border-cyan-500/20 bg-white/5 overflow-hidden"
             >
-              {/* 4 tiny pixels inside the logo box */}
-              <div className="w-3 h-3 bg-cyan-500"></div>
-              <div className="w-3 h-3 bg-transparent border border-cyan-500/50"></div>
-              <div className="w-3 h-3 bg-transparent border border-cyan-500/50"></div>
-              <div className="w-3 h-3 bg-cyan-300"></div>
+              <img
+                src="/algo-pixel/algo-pixel-logo.jpg"
+                alt="Algo Pixel Empire Logo"
+                className="w-full h-full object-cover mix-blend-screen"
+                style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.5) contrast(1.2)' }}
+              />
             </motion.div>
             <div className="hidden sm:flex flex-col">
               <span className="font-mono font-bold text-white text-lg leading-none tracking-tight">ALGO PIXEL EMPIRE</span>
