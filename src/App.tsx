@@ -429,6 +429,23 @@ const InteractiveModelBuilder = () => {
   );
 };
 
+const ObfuscatedContactButton = () => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Split to prevent simple string scraping
+    const user = 'cheahyueyeou';
+    const domain = 'gmail.com';
+    window.location.href = `mailto:${user}@${domain}`;
+  };
+
+  return (
+    <a href="#" onClick={handleClick} className="inline-flex items-center justify-center gap-3 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 font-mono text-sm uppercase tracking-wider font-bold hover:bg-cyan-500 hover:text-black transition-all">
+      <Mail className="w-4 h-4" />
+      Transmit Message
+    </a>
+  );
+};
+
 export default function App() {
   const { scrollYProgress } = useScroll();
   const yOffset = useTransform(scrollYProgress, [0, 1], [0, 200]);
@@ -822,10 +839,7 @@ export default function App() {
                 <p className="text-lg text-slate-400 mb-10 max-w-md font-light">
                   Ready to deploy high-velocity engineering automations or mandate massive structural blueprints?
                 </p>
-                <a href="mailto:cheahyueyeou@gmail.com" className="inline-flex items-center justify-center gap-3 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 font-mono text-sm uppercase tracking-wider font-bold hover:bg-cyan-500 hover:text-black transition-all">
-                  <Mail className="w-4 h-4" />
-                  Transmit Message
-                </a>
+                <ObfuscatedContactButton />
               </div>
 
               <div className="flex flex-col justify-center space-y-6">
