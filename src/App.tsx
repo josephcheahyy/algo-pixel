@@ -420,7 +420,7 @@ const InteractiveModelBuilder = () => {
       {/* 3D Container */}
       <div
         ref={containerRef}
-        className="w-[240px] h-[240px] md:w-[450px] md:h-[450px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-visible"
+        className="w-[200px] h-[120px] md:w-[450px] md:h-[450px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-visible"
         style={{ perspective: '1000px', touchAction: 'none' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -773,7 +773,7 @@ export default function App() {
               transition={{ duration: 0.8 }}
               className="max-w-4xl"
             >
-              <div className="mb-8 w-24 h-24 md:w-32 md:h-32 relative logo-glitch overflow-hidden border-2 border-cyan-500/80">
+              <div className="mb-8 w-44 h-44 md:w-56 md:h-56 relative logo-glitch overflow-hidden border-2 border-cyan-500/80">
                 <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-full h-full object-contain" />
               </div>
 
@@ -794,6 +794,22 @@ export default function App() {
               <p className="text-base md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl font-light border-l border-white/10 pl-4">
                 Our expertise lies in using computational automation to accelerate structural engineering while maintaining the aesthetic precision required for modern design.
               </p>
+
+              <div className="flex flex-col gap-6 font-mono text-sm max-w-xl">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <SafeInteractiveButton
+                    url="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
+                    text="Work With Algo Pixel Now"
+                  />
+                  <a href="#products" className="inline-block text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-cyan-400 border border-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors bg-cyan-950/20">
+                    EXPLORE OUR SERVICES
+                  </a>
+                </div>
+
+                <div className="mt-2">
+                  <SafeSocialLinks />
+                </div>
+              </div>
             </motion.div>
 
             {/* Interactive Model Builder Decoration */}
