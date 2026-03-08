@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'motion/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Building2, Cpu, LineChart, Droplets, Code2,
   Layers, ArrowRight, Mail, Linkedin, Github,
@@ -193,6 +193,132 @@ const InteractiveStructuralBackground = () => {
   );
 };
 
+// Interactive 3D Voxel Builder Component
+const InteractiveModelBuilder = () => {
+  const [cubes, setCubes] = useState<{ x: number, y: number, z: number, id: number }[]>([]);
+  const [message, setMessage] = useState("CLICK TO MODEL STRUCTURE");
+  const [isFading, setIsFading] = useState(false);
+  const [rotX, setRotX] = useState(0);
+  const [rotY, setRotY] = useState(0);
+
+  // Auto rotation
+  useEffect(() => {
+    let animationId: number;
+    const animate = () => {
+      setRotX(prev => prev + 0.2);
+      setRotY(prev => prev + 0.5);
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+
+  // 8 Second Timer Logic
+  useEffect(() => {
+    if (cubes.length === 0) return;
+
+    const fadeTimer = setTimeout(() => {
+      setIsFading(true);
+      setMessage("MODELING COSTS EFFORT.");
+
+      setTimeout(() => {
+        setMessage("BUT LET US DO IT.");
+        setTimeout(() => {
+          setCubes([]);
+          setIsFading(false);
+          setMessage("CLICK TO MODEL STRUCTURE");
+        }, 3000);
+      }, 2000);
+    }, 8000); // 8 seconds after first cube is placed
+
+    return () => clearTimeout(fadeTimer);
+  }, [cubes.length === 0]); // Only trigger when we go from 0 to 1+
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isFading) return;
+
+    // Calculate relative click position
+    const rect = e.currentTarget.getBoundingClientRect();
+    // Map to a grid (-2 to 2)
+    const x = Math.round(((e.clientX - rect.left) / rect.width - 0.5) * 4);
+    const y = Math.round(((e.clientY - rect.top) / rect.height - 0.5) * 4);
+
+    // Add new cube at click position with random z depth
+    const newCube = {
+      x: x * 40,
+      y: y * 40,
+      z: (Math.random() - 0.5) * 100,
+      id: Date.now() + Math.random()
+    };
+
+    setCubes(prev => [...prev, newCube]);
+    if (message === "CLICK TO MODEL STRUCTURE") {
+      setMessage("INJECTING STRUCTURAL ELEMENTS...");
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto">
+      {/* 3D Container */}
+      <div
+        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group"
+        style={{ perspective: '1000px' }}
+        onClick={handleCanvasClick}
+      >
+        <div className="absolute top-2 left-2 font-mono text-[10px] text-cyan-400/50">
+          X: {(rotX % 360).toFixed(1)}° <br />
+          Y: {(rotY % 360).toFixed(1)}°
+        </div>
+
+        {/* Helper Grid lines to show building area */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none transition-opacity group-hover:opacity-50"></div>
+
+        <motion.div
+          animate={{ rotateX: rotX, rotateY: rotY }}
+          className={`w-full h-full absolute transition-opacity duration-1000 ${isFading ? 'opacity-0 scale-110 blur-md' : 'opacity-100'}`}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {/* Base Structural Frame that always exists */}
+          <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(100px)' }}></div>
+          <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(-100px)' }}></div>
+          <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateX(90deg) translateZ(100px)' }}></div>
+          <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateY(90deg) translateZ(100px)' }}></div>
+
+          {/* User-added cubes */}
+          {cubes.map((cube) => (
+            <motion.div
+              key={cube.id}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.8 }}
+              className="absolute left-1/2 top-1/2 w-[40px] h-[40px] -ml-[20px] -mt-[20px] border border-cyan-400 bg-cyan-500/20 backdrop-blur-sm"
+              style={{
+                transform: `translate3d(${cube.x}px, ${cube.y}px, ${cube.z}px)`,
+                transformStyle: 'preserve-3d'
+              }}
+            >
+              {/* Fake 3D edges for the cube */}
+              <div className="absolute inset-0 bg-cyan-400/20" style={{ transform: 'translateZ(20px)' }}></div>
+              <div className="absolute inset-0 bg-cyan-600/20" style={{ transform: 'translateZ(-20px)' }}></div>
+              <div className="absolute inset-0 bg-cyan-500/20 border-l border-cyan-300" style={{ transform: 'rotateY(90deg) translateZ(20px)' }}></div>
+              <div className="absolute inset-0 bg-cyan-500/20 border-r border-cyan-300" style={{ transform: 'rotateY(90deg) translateZ(-20px)' }}></div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Interactive Message Display */}
+      <motion.div
+        key={message}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`mt-8 font-mono text-sm tracking-widest text-center ${isFading ? 'text-cyan-300 font-bold' : 'text-cyan-600'}`}
+      >
+        {message}
+      </motion.div>
+    </div>
+  );
+};
+
 export default function App() {
   const { scrollYProgress } = useScroll();
   const yOffset = useTransform(scrollYProgress, [0, 1], [0, 200]);
@@ -272,61 +398,12 @@ export default function App() {
               </div>
             </motion.div>
 
-            {/* Structural FEA / Wireframe Decoration */}
+            {/* Interactive Model Builder Decoration */}
             <motion.div
               style={{ y: yOffset }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 -z-10 hidden lg:block opacity-80 w-[500px] h-[500px] pointer-events-none"
+              className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block opacity-90 w-[500px] h-[500px]"
             >
-              <div className="relative w-full h-full flex items-center justify-center" style={{ perspective: '1000px' }}>
-                <motion.div
-                  animate={{ rotateX: [0, 360], rotateY: [0, 360] }}
-                  transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                  className="w-[300px] h-[300px] border border-cyan-500/30 relative"
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(150px)' }}></div>
-                  <div className="absolute inset-0 border border-cyan-500/30" style={{ transform: 'translateZ(-150px)' }}></div>
-                  {/* Connectors */}
-                  <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateX(90deg) translateZ(150px)' }}></div>
-                  <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateY(90deg) translateZ(150px)' }}></div>
-
-                  {/* Finite Element Cross Bracing (Diagonal Members) */}
-                  <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ transform: 'translateZ(150px)' }}>
-                    <line x1="0" y1="0" x2="300" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
-                    <line x1="300" y1="0" x2="0" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
-                  </svg>
-                  <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ transform: 'translateZ(-150px)' }}>
-                    <line x1="0" y1="0" x2="300" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
-                    <line x1="300" y1="0" x2="0" y2="300" stroke="rgba(0,255,204,0.4)" strokeWidth="1" strokeDasharray="5 5" />
-                  </svg>
-
-                  {/* Nodes (Joints) */}
-                  <div className="absolute top-0 left-0 w-3 h-3 bg-cyan-400 -translate-x-1.5 -translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
-                  <div className="absolute top-0 right-0 w-3 h-3 bg-cyan-400 translate-x-1.5 -translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
-                  <div className="absolute bottom-0 left-0 w-3 h-3 bg-cyan-400 -translate-x-1.5 translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-cyan-400 translate-x-1.5 translate-y-1.5" style={{ transform: 'translateZ(150px)' }}></div>
-                </motion.div>
-
-                {/* Orbiting Structural Data Points */}
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <motion.div
-                    key={`orb-${i}`}
-                    className="absolute w-2 h-2 border border-cyan-300 bg-black mix-blend-screen"
-                    animate={{
-                      rotate: [0, 360],
-                      scale: [1, 1.5, 1]
-                    }}
-                    transition={{
-                      rotate: { duration: 10 + i * 2, repeat: Infinity, ease: "linear" },
-                      scale: { duration: 2, repeat: Infinity, repeatType: 'reverse' }
-                    }}
-                    style={{
-                      originX: `${(i % 2 === 0 ? 150 : -150)}px`,
-                      originY: `${(i % 3 === 0 ? 150 : -150)}px`,
-                    }}
-                  />
-                ))}
-              </div>
+              <InteractiveModelBuilder />
             </motion.div>
           </div>
         </section>
