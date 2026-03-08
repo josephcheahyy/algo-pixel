@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Building2, Cpu, LineChart, Droplets, Code2,
   Layers, ArrowRight, Mail, Linkedin, Github,
-  Terminal, Database, Grid3X3, Braces
+  Terminal, Database, Grid3X3, Braces, Shield, ShieldCheck, X
 } from 'lucide-react';
 
 // A "Pixelated" or Glitch decipher text effect for algorithmic feel
@@ -207,6 +207,9 @@ type StructElement = {
 
 const StructBlock = ({ el }: { el: StructElement; key?: React.Key }) => {
   const { w, h, d, x, y, z, type } = el;
+  const analysisValue = React.useMemo(() => (Math.random() * 500).toFixed(1), []);
+  const analysisType = React.useMemo(() => Math.random() > 0.5 ? 'Shear: ' : 'Moment: ', []);
+
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
@@ -233,6 +236,17 @@ const StructBlock = ({ el }: { el: StructElement; key?: React.Key }) => {
       <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }}></div>
       {/* Bottom */}
       <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(-90deg) translateZ(${h / 2}px)` }}></div>
+
+      {/* Analysis UI tag with a leg */}
+      <div className="absolute right-[-40px] top-[-40px] w-[80px] bg-[#020617] border border-cyan-400 p-1 shadow-lg" style={{ transform: 'translateZ(10px) rotateY(-45deg)' }}>
+        <div className="absolute bottom-[-20px] left-[-20px] w-[30px] h-[1px] bg-cyan-400 rotate-45 transform origin-top-left pointer-events-none"></div>
+        <div className="text-[6px] font-mono text-cyan-300 whitespace-nowrap">
+          {analysisType} {analysisValue}kN{analysisType === 'Moment: ' ? 'm' : ''}
+        </div>
+        <div className="w-full h-1 mt-1 bg-cyan-900/50">
+          <div className="h-full bg-cyan-400" style={{ width: `${Math.random() * 100}%` }}></div>
+        </div>
+      </div>
     </motion.div>
   );
 };
@@ -268,7 +282,7 @@ const InteractiveModelBuilder = () => {
 
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
-      setMessage("MODELING COSTS EFFORT...");
+      setMessage("ANALYSIS & MODELLING COSTS EFFORTS AND TIME...");
 
       setTimeout(() => {
         setMessage("BUT LET ALGO PIXEL DO IT FOR YOU.");
@@ -429,20 +443,147 @@ const InteractiveModelBuilder = () => {
   );
 };
 
-const ObfuscatedContactButton = () => {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    // Split to prevent simple string scraping
-    const user = 'cheahyueyeou';
-    const domain = 'gmail.com';
-    window.location.href = `mailto:${user}@${domain}`;
+const AntiPhishPuzzleModal = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  targetUrl
+}: {
+  isOpen: boolean,
+  onClose: () => void,
+  onSuccess: (url: string) => void,
+  targetUrl: string
+}) => {
+  const [clickedNodes, setClickedNodes] = useState<number[]>([]);
+  const requiredNodes = [0, 4, 8]; // Diagonal nodes
+
+  useEffect(() => {
+    if (isOpen) setClickedNodes([]);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleNodeClick = (index: number) => {
+    if (clickedNodes.includes(index)) return;
+    const newNodes = [...clickedNodes, index];
+    setClickedNodes(newNodes);
+
+    if (newNodes.length === 3) {
+      const isValid = requiredNodes.every(n => newNodes.includes(n));
+      if (isValid) {
+        setTimeout(() => {
+          onSuccess(targetUrl);
+          onClose();
+        }, 500);
+      } else {
+        setTimeout(() => setClickedNodes([]), 600);
+      }
+    }
   };
 
   return (
-    <a href="#" onClick={handleClick} className="inline-flex items-center justify-center gap-3 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 font-mono text-sm uppercase tracking-wider font-bold hover:bg-cyan-500 hover:text-black transition-all">
-      <Mail className="w-4 h-4" />
-      Transmit Message
-    </a>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-[#020617] border border-cyan-500 max-w-md w-full p-6 md:p-8 relative"
+      >
+        <button onClick={onClose} className="absolute right-4 top-4 text-slate-500 hover:text-white">
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <Shield className="w-6 h-6 text-cyan-400" />
+          <h3 className="font-mono text-lg font-bold text-white uppercase">Anti-Bot Protocol</h3>
+        </div>
+
+        <p className="text-sm text-slate-400 mb-6 font-light">
+          Verify human structural intelligence: Click the <strong className="text-cyan-400">3 diagonal load-bearing nodes</strong> (top-left, center, bottom-right) to establish a secure connection.
+        </p>
+
+        <div className="grid grid-cols-3 gap-4 mb-6 relative p-6 border border-cyan-900/50 bg-black/50">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+            <div className="w-[120%] h-0.5 bg-cyan-500 absolute rotate-45"></div>
+          </div>
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <button
+              key={i}
+              onClick={() => handleNodeClick(i)}
+              className={`w-12 h-12 md:w-16 md:h-16 mx-auto rounded-full border-2 transition-all relative z-10 flex items-center justify-center
+                ${clickedNodes.includes(i)
+                  ? requiredNodes.includes(i) ? 'bg-cyan-500 border-cyan-400' : 'bg-red-500 border-red-400'
+                  : 'bg-[#020617] border-cyan-800 hover:border-cyan-400'}`}
+            >
+              {clickedNodes.includes(i) && (
+                <div className="w-4 h-4 bg-white rounded-full"></div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-mono text-cyan-600 uppercase h-4">
+          {clickedNodes.length === 3 && requiredNodes.every(n => clickedNodes.includes(n)) ? (
+            <span className="text-green-400 flex items-center gap-2"><ShieldCheck className="w-4 h-4" /> Connection Secure</span>
+          ) : clickedNodes.length === 3 ? (
+            <span className="text-red-400">Structural Failure. Resetting...</span>
+          ) : (
+            <span>Awaiting Node Selection [{clickedNodes.length}/3]</span>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+const SafeSocialLinks = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [targetUrl, setTargetUrl] = useState("");
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    e.preventDefault();
+    setTargetUrl(url);
+    setModalOpen(true);
+  };
+
+  const handleSuccess = (url: string) => {
+    if (url.startsWith('mailto:')) {
+      window.location.href = url;
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const links = [
+    { name: "Email", icon: <Mail className="w-5 h-5" />, url: "mailto:cheahyueyeou@gmail.com" },
+    { name: "LinkedIn", icon: <Linkedin className="w-5 h-5" />, url: "https://www.linkedin.com/in/josephcheah-intj-generalist/" },
+    { name: "WhatsApp", icon: <span className="font-bold text-xs uppercase">WA</span>, url: "https://wa.me/message/JRBZU4QQ2WBAK1" },
+    { name: "Upwork", icon: <span className="font-bold text-xs uppercase">UP</span>, url: "https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share" },
+    { name: "Fiverr", icon: <span className="font-bold text-xs uppercase">FI</span>, url: "https://www.fiverr.com/s/qD173Wy" },
+    { name: "GitHub", icon: <Github className="w-5 h-5" />, url: "https://github.com/josephcheahyy" },
+  ];
+
+  return (
+    <>
+      <div className="flex flex-wrap gap-4">
+        {links.map((link) => (
+          <a
+            key={link.name}
+            href={link.url}
+            onClick={(e) => handleLinkClick(e, link.url)}
+            className="w-12 h-12 flex items-center justify-center border border-cyan-900/50 text-cyan-500 hover:bg-cyan-500 hover:text-black transition-all bg-[#020617]/50 backdrop-blur-sm"
+            title={link.name}
+          >
+            {link.icon}
+          </a>
+        ))}
+      </div>
+      <AntiPhishPuzzleModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleSuccess}
+        targetUrl={targetUrl}
+      />
+    </>
   );
 };
 
@@ -457,23 +598,22 @@ export default function App() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-cyan-900/30">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* User Logo */}
+          <div className="flex items-center gap-4">
+            {/* User Logo with gradient fade */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 relative flex items-center justify-center cursor-pointer border border-cyan-500/20 bg-white/5 overflow-hidden"
+              className="w-14 h-14 relative flex items-center justify-center cursor-pointer overflow-hidden rounded-sm bg-gradient-to-b from-white via-white/80 to-[#020617]"
             >
               <img
                 src="/algo-pixel/algo-pixel-logo.jpg"
                 alt="Algo Pixel Empire Logo"
-                className="w-full h-full object-cover mix-blend-screen"
-                style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.5) contrast(1.2)' }}
+                className="w-[90%] h-[90%] object-cover mix-blend-multiply"
               />
             </motion.div>
             <div className="hidden sm:flex flex-col">
               <span className="font-mono font-bold text-white text-lg leading-none tracking-tight">ALGO PIXEL EMPIRE</span>
-              <span className="font-mono text-[10px] tracking-widest text-cyan-500">JOSEPH CHEAH // FOUNDER</span>
+              <a href="https://www.linkedin.com/in/josephcheah-intj-generalist/" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] tracking-widest text-cyan-500 hover:text-cyan-300 transition-colors">JOSEPH CHEAH // FOUNDER</a>
             </div>
           </div>
           <div className="hidden md:flex gap-8 text-xs font-mono tracking-widest text-cyan-600/70 uppercase">
@@ -497,7 +637,7 @@ export default function App() {
             >
               <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-cyan-950/30 border-l-2 border-cyan-500 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
                 <Grid3X3 className="w-4 h-4" />
-                <span>High-Rise Structural Design & Automation</span>
+                <span>Civil & Structure Analysis | Graphic Design | AI Automation</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-6 leading-[1] uppercase">
@@ -508,28 +648,33 @@ export default function App() {
               </h1>
 
               <p className="text-base md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl font-light border-l border-white/10 pl-4">
-                I construct <strong className="text-white font-medium">high-performance residential RC structural designs, digital workflows, and advanced 3D models</strong>. Merging raw engineering physics with pixel-perfect automation.
+                Our expertise lies in using computational automation to accelerate structural engineering while maintaining the aesthetic precision required for modern design.
               </p>
 
-              <div className="flex flex-wrap gap-4 font-mono text-sm">
-                <motion.a
-                  whileHover={{ scale: 1.05, backgroundColor: "#06b6d4", color: "#000" }}
-                  whileTap={{ scale: 0.95 }}
-                  href="https://www.upwork.com/services/product/design-a-full-set-of-residential-rc-design-report-and-3d-model-2029193254216635191?ref=project_share&tier=1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 transition-all relative overflow-hidden group"
-                >
-                  <span className="relative z-10 font-bold uppercase tracking-wider">Execute Protocol [Hire Me]</span>
-                  <div className="absolute inset-0 bg-cyan-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 z-0"></div>
-                </motion.a>
+              <div className="flex flex-col gap-6 font-mono text-sm">
+                <div className="flex flex-wrap gap-4">
+                  <motion.a
+                    whileHover={{ scale: 1.05, backgroundColor: "#06b6d4", color: "#000" }}
+                    whileTap={{ scale: 0.95 }}
+                    href="https://www.upwork.com/services/product/design-a-full-set-of-residential-rc-design-report-and-3d-model-2029193254216635191?ref=project_share&tier=1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-cyan-500 text-cyan-400 px-8 py-4 transition-all relative overflow-hidden group w-max"
+                  >
+                    <span className="relative z-10 font-bold uppercase tracking-wider">Work With Algo Pixel Now</span>
+                    <div className="absolute inset-0 bg-cyan-500 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300 z-0"></div>
+                  </motion.a>
+                </div>
+
+                {/* Safe Social Links will be mounted here */}
+                <SafeSocialLinks />
               </div>
             </motion.div>
 
             {/* Interactive Model Builder Decoration */}
             <motion.div
               style={{ y: yOffset }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block opacity-90 w-[500px] h-[500px]"
+              className="mt-12 lg:mt-0 relative lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 opacity-90 w-full h-[400px] md:w-[600px] md:h-[600px] lg:w-[650px] lg:h-[650px] touch-none"
             >
               <InteractiveModelBuilder />
             </motion.div>
@@ -558,21 +703,21 @@ export default function App() {
                 </h2>
                 <div className="space-y-6 text-slate-400 font-light text-lg">
                   <p>
-                    My philosophy is absolute efficiency: integrate robust engineering design with <strong className="text-cyan-400">digital tools and data-driven decision-making</strong> to drive project velocity and precision.
+                    My philosophy is absolute efficiency: integrate engineering design with <strong className="text-cyan-400">digital tools and data-driven decision-making</strong> to drive project velocity and precision.
                   </p>
                   <p>
-                    With 4+ years of experience navigating high-rise environments and fluid dynamics (water supply systems), I operate at the intersection of <strong className="text-white">Structural Engineering, Computational Design, and AI Automation</strong>.
+                    As a Civil & Structural Engineer with 4+ years of experience specializing in high-rise design and water supply systems, I operate at the intersection of <strong className="text-white">Structural Engineering, Computational Design, and AI Automation</strong>.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-x-8 gap-y-10 mt-12">
                   <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">40<span className="text-cyan-500">%</span></div>
+                    <div className="text-4xl font-black text-white mb-1 font-mono">80<span className="text-cyan-500">%</span></div>
                     <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Faster Modeling</div>
                   </div>
                   <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
-                    <div className="text-4xl font-black text-white mb-1 font-mono">40<span className="text-cyan-500">%</span></div>
-                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Faster Shearwall Design</div>
+                    <div className="text-4xl font-black text-white mb-1 font-mono">30<span className="text-cyan-500">%</span></div>
+                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Design Faster with Algorithm</div>
                   </div>
                   <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
                     <div className="text-4xl font-black text-white mb-1 font-mono">10<span className="text-cyan-500">+</span></div>
@@ -602,11 +747,11 @@ export default function App() {
                   <div className="w-full h-full relative overflow-hidden bg-cyan-950/20">
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
                     <img
-                      src="/algo-pixel/bim_tech.png"
-                      alt="BIM and Technology"
-                      className="w-full h-full object-cover opacity-70 mix-blend-screen scale-105 hover:scale-100 transition-transform duration-700"
+                      src="/algo-pixel/profile-photo.jpg"
+                      alt="Joseph Cheah"
+                      className="w-full h-full object-cover opacity-90 mix-blend-lighten scale-105 hover:scale-100 transition-transform duration-700 filter contrast-125"
                     />
-                    <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(2,6,23,0.8)]" />
+                    <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(2,6,23,0.9)]" />
 
                     {/* HUD Elements */}
                     <div className="absolute top-4 right-4 font-mono text-[10px] text-cyan-400 text-right bg-black/60 p-2 border border-cyan-500/30">
@@ -632,7 +777,7 @@ export default function App() {
           <div className="max-w-7xl mx-auto">
             <div className="mb-16 border-b border-cyan-900/30 pb-8">
               <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">02 // Capability Matrix</div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase">Core Algorithms</h2>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase">Core Skills</h2>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
@@ -703,126 +848,108 @@ export default function App() {
         <section id="products" className="py-24 px-6 border-y border-cyan-900/30 bg-[#020617]/50">
           <div className="max-w-7xl mx-auto">
             <div className="mb-16">
-              <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">03 // Deployed Systems</div>
+              <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">03 // Deployed Services</div>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase mb-4">Analysis & Computation</h2>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-8">
-              {/* Featured Product */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="lg:col-span-12 bg-black border border-cyan-500/30 p-1 relative group"
-              >
-                <div className="bg-[#020617] p-8 md:p-12 h-full flex flex-col md:flex-row gap-12 items-center relative overflow-hidden">
-                  {/* Background grid */}
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBGRkNDIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgo8L3N2Zz4=')] opacity-50"></div>
-
-                  <div className="relative z-10 flex-1">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500 text-black font-bold font-mono text-xs tracking-widest uppercase mb-6">
-                      <Terminal className="w-3 h-3" /> Root Execution
-                    </div>
-                    <h3 className="text-4xl md:text-5xl font-black text-white mb-4 uppercase">NestWiseAi</h3>
-                    <p className="text-slate-400 mb-8 leading-relaxed font-light text-lg">
-                      A GPT-driven financial assistance model utilizing OpenAI functions. Leading the development to provide intelligent, automated financial insights mapping direct to structural economics.
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                      {['OpenAI Protocol', 'Function Calling', 'Financial Modeling', 'Workflow Automation'].map((feature, i) => (
-                        <div key={i} className="flex items-center gap-3 text-sm text-cyan-300 font-mono">
-                          <span className="text-cyan-600">[{i + 1}]</span> {feature}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 flex-1 w-full">
-                    <div className="aspect-video bg-black border-2 border-cyan-900 relative p-1 overflow-hidden">
-                      <div className="w-full h-full relative border border-cyan-900/50">
-                        {/* Simulated AI Terminal View */}
-                        <div className="absolute inset-0 bg-black flex flex-col p-4 font-mono text-xs text-cyan-500">
-                          <div className="flex justify-between border-b border-cyan-900 pb-2 mb-4">
-                            <span>nestwise_ai.exe</span>
-                            <span>v1.0.4-BETA</span>
-                          </div>
-                          <div className="flex-1 opacity-70">
-                            {'>'} INITIALIZING NEURAL PATHWAYS... [OK]<br />
-                            {'>'} LOADING FINANCIAL DATASETS... [OK]<br />
-                            {'>'} BINDING OPENAI PROTOCOLS...<br /><br />
-                            <motion.span
-                              animate={{ opacity: [0, 1, 0] }}
-                              transition={{ repeat: Infinity, duration: 0.8 }}
-                              className="w-2 h-4 bg-cyan-400 inline-block"
-                            ></motion.span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Boxed modules */}
-              <motion.div
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* SERVICE 1 */}
+              <motion.a
+                href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-6 border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group block"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-                  <Code2 className="w-24 h-24 text-cyan-500" />
+                  <Building2 className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10">
-                  <div className="font-mono text-cyan-500 mb-2">// SCRIPT.01</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">AutoLisp Bridge</h3>
+                  <div className="font-mono text-cyan-500 mb-2">// SERVICE.01</div>
+                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Structural Modelling & Analysis</h3>
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    High-velocity computational scripts engineered to map ETABS physics analysis directly to AutoCAD drafting nodes. Accelerating deployment models by 80%.
+                    High-rise RC/PT building design, fluid dynamic systems, and full Eurocode/BS Standards compliance modeling across Revit, ETABS, and SAFE environments.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
-                    <span className="border border-cyan-500/30 px-2 py-1">AutoLisp</span>
-                    <span className="border border-cyan-500/30 px-2 py-1">ETABS API</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">ETABS / SAP2000</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Revit BIM</span>
                   </div>
                 </div>
-              </motion.div>
+              </motion.a>
 
+              {/* SERVICE 2 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="lg:col-span-6 border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
+              >
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                  <Code2 className="w-24 h-24 text-cyan-500" />
+                </div>
+                <div className="relative z-10">
+                  <div className="font-mono text-cyan-500 mb-2">// SERVICE.02</div>
+                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom AutoLISP</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
+                    High-velocity computational scripts engineered to map ETABS physics analysis directly to AutoCAD drafting nodes. Accelerating deployment models by 80%.
+                  </p>
+                  <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
+                    <span className="border border-cyan-500/30 px-2 py-1">AutoLISP</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Automation</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* SERVICE 3 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
                   <Database className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10">
-                  <div className="font-mono text-cyan-500 mb-2">// SCRIPT.02</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Shearwall Compiler</h3>
+                  <div className="font-mono text-cyan-500 mb-2">// SERVICE.03</div>
+                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom Spreadsheet</h3>
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     Automated Excel-based computation matrices for rapid shearwall and corewall design iterations. Reducing standard design loop latency by 40%.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">Excel VBA</span>
-                    <span className="border border-cyan-500/30 px-2 py-1">Struct. Analysis</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Struct. Matrix</span>
                   </div>
                 </div>
               </motion.div>
 
+              {/* SERVICE 4 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-12 border border-cyan-900/50 bg-[#020617] p-8 relative flex flex-col md:flex-row justify-between items-center"
+                transition={{ delay: 0.1 }}
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col justify-between"
               >
-                <div>
-                  <div className="font-mono text-cyan-600 text-[10px] uppercase tracking-widest mb-2">Published Log [2025]</div>
-                  <h3 className="text-xl font-bold text-white uppercase">Numerical Modeling of Cold-Formed Steel Section Performance in Fire</h3>
-                  <p className="text-slate-400 mt-2 font-light text-sm max-w-3xl">Research detailing the thermodynamics and structural integrity algorithms of cold-formed steel exposed to extreme heat variables.</p>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                  <Terminal className="w-24 h-24 text-cyan-500" />
                 </div>
-                <button className="mt-6 md:mt-0 whitespace-nowrap px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-500 hover:bg-cyan-400 transition-colors">
-                  Mount Document
-                </button>
+                <div className="relative z-10">
+                  <div className="font-mono text-cyan-500 mb-2">// SERVICE.04</div>
+                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Research and Analysis</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-4 font-light max-w-sm">
+                    In-depth technical analysis spanning structural behavior, digital transformations, and experimental data extrapolation.
+                  </p>
+                  {/* Embedded Paper Block */}
+                  <div className="mt-4 p-4 border border-cyan-500/30 bg-black/50">
+                    <div className="font-mono text-cyan-600 text-[10px] uppercase tracking-widest mb-1">Published Paper [2025]</div>
+                    <h4 className="text-xs font-bold text-white uppercase mb-2 leading-tight">Numerical Modeling of Cold-Formed Steel Section Performance in Fire</h4>
+                    <button className="whitespace-nowrap px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black bg-cyan-500 hover:bg-cyan-400 transition-colors">
+                      Mount Document
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
@@ -840,33 +967,12 @@ export default function App() {
                 <p className="text-lg text-slate-400 mb-10 max-w-md font-light">
                   Ready to deploy high-velocity engineering automations or mandate massive structural blueprints?
                 </p>
-                <ObfuscatedContactButton />
-              </div>
-
-              <div className="flex flex-col justify-center space-y-6">
-                <a href="#" className="flex items-center gap-4 p-4 border border-cyan-900/30 hover:border-cyan-500 hover:bg-cyan-950/20 transition-all font-mono group">
-                  <div className="text-cyan-600 group-hover:text-cyan-400 transition-colors">
-                    <Linkedin className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-white uppercase tracking-wider text-sm">LinkedIn.sys</div>
-                    <div className="text-[10px] text-cyan-600">PROFESSIONAL_INDEX</div>
-                  </div>
-                </a>
-                <a href="#" className="flex items-center gap-4 p-4 border border-cyan-900/30 hover:border-cyan-500 hover:bg-cyan-950/20 transition-all font-mono group">
-                  <div className="text-cyan-600 group-hover:text-cyan-400 transition-colors">
-                    <Github className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-white uppercase tracking-wider text-sm">GitHub.sys</div>
-                    <div className="text-[10px] text-cyan-600">SOURCE_REPOSITORIES</div>
-                  </div>
-                </a>
+                <SafeSocialLinks />
               </div>
             </div>
 
             <div className="mt-8 flex flex-col md:flex-row items-center justify-between font-mono text-[10px] text-cyan-700 uppercase tracking-widest">
-              <p>ALGO PIXEL EMPIRE © {new Date().getFullYear()} // JOSEPH CHEAH.</p>
+              <p>ALGO PIXEL EMPIRE © {new Date().getFullYear()} // JOSEPH CHEAH. JM1041472-M</p>
               <div className="flex gap-4 mt-4 md:mt-0">
                 <span>[ENG]</span>
                 <span>[MGR]</span>
