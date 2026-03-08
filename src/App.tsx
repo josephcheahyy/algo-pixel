@@ -801,7 +801,7 @@ export default function App() {
                     url="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
                     text="Work With Algo Pixel Now"
                   />
-                  <a href="#products" className="inline-block text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-cyan-400 border border-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors bg-cyan-950/20">
+                  <a href="#products" className="inline-block w-full sm:w-auto text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-cyan-400 border border-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors bg-cyan-950/20">
                     EXPLORE OUR SERVICES
                   </a>
                 </div>
@@ -815,7 +815,7 @@ export default function App() {
             {/* Interactive Model Builder Decoration */}
             <motion.div
               style={{ y: yOffset }}
-              className="mt-12 lg:mt-0 relative lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 opacity-90 w-full h-[400px] md:w-[600px] md:h-[600px] lg:w-[650px] lg:h-[650px] touch-none"
+              className="hidden md:block mt-12 lg:mt-0 relative lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 opacity-90 w-full h-[400px] md:w-[600px] md:h-[600px] lg:w-[650px] lg:h-[650px] touch-none"
             >
               <InteractiveModelBuilder />
             </motion.div>
