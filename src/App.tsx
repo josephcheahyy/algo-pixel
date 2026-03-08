@@ -270,6 +270,9 @@ const InteractiveModelBuilder = () => {
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isFading) return;
     setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+    // Prevent default to stop any text selection or native drag-and-drop
+    e.preventDefault();
     addCube(e.clientX, e.clientY);
   };
 
@@ -278,8 +281,11 @@ const InteractiveModelBuilder = () => {
     addCube(e.clientX, e.clientY);
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
@@ -292,7 +298,8 @@ const InteractiveModelBuilder = () => {
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onDragStart={(e) => e.preventDefault()}
       >
         <div className="absolute top-2 left-2 font-mono text-[10px] text-cyan-400/50 pointer-events-none">
           X: {(rotX % 360).toFixed(1)}° <br />
