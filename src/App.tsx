@@ -359,14 +359,7 @@ const InteractiveModelBuilder = () => {
     // Detect if this was a click (very small movement)
     const isClick = absDx < 5 && absDy < 5;
 
-    // Convert screen coordinates to world coordinates by rotating backward against current rotY
-    const angY = rotY * (Math.PI / 180);
-    const getWorldPoint = (screenX: number, screenY: number, z: number) => ({
-      x: screenX * Math.cos(angY) + z * Math.sin(angY),
-      y: screenY,
-      z: -screenX * Math.sin(angY) + z * Math.cos(angY)
-    });
-
+    // Logic mapping physical pixels purely to the container regardless of projection rotation
     if (isClick) {
       // Logic for 2-point clicking (Beams & Columns)
       if (!firstPoint) {
@@ -383,11 +376,9 @@ const InteractiveModelBuilder = () => {
         let w = type === 'beam' ? Math.max(Math.abs(cdx), 20) : 16;
         let h = type === 'column' ? Math.max(Math.abs(cdy), 20) : 16;
 
-        const wp = getWorldPoint(screenCx, screenCy, tempZ);
-
         setElements(prev => [...prev, {
           id: Date.now() + Math.random(),
-          type, ...wp, w, h, d: 16
+          type, x: screenCx, y: screenCy, z: tempZ, w, h, d: 16
         }]);
 
         if (message.includes("DRAG")) {
@@ -402,26 +393,19 @@ const InteractiveModelBuilder = () => {
       const screenCy = dragStart.y + dy / 2;
       const tempZ = 0;
 
-      let type: 'slab' = 'slab';
-      let w = 20, h = 20, d = 20;
-
-      if (absDx > 20 && absDy > 20) {
-        type = 'slab';
-        w = absDx;
-        h = absDy;
-        d = 10;
-      }
+      const type = absDx > 20 && absDy > 20 ? 'slab' : 'node';
+      const w = type === 'slab' ? absDx : 20;
+      const h = type === 'slab' ? absDy : 20;
+      const d = type === 'slab' ? 10 : 20;
 
       if (type === 'slab') {
         if (message.includes("DRAG")) {
           setMessage("INJECTING STRUCTURAL ELEMENTS...");
         }
 
-        const wp = getWorldPoint(screenCx, screenCy, tempZ);
-
         setElements(prev => [...prev, {
           id: Date.now() + Math.random(),
-          type, ...wp, w, h, d
+          type, x: screenCx, y: screenCy, z: tempZ, w, h, d
         }]);
         setFirstPoint(null); // Clear any partial click states
       }
@@ -506,14 +490,20 @@ const InteractiveModelBuilder = () => {
                 transformStyle: 'preserve-3d'
               }}
             >
-              <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center mix-blend-screen" style={{ transform: `translateZ(${el.d / 2}px)` }}>
-                <span className="text-[8px] font-black tracking-widest font-mono text-white/70 uppercase">{el.type}</span>
+              <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center mix-blend-screen" style={{
+                transform: `translate3d(${el.x}px, ${el.y}px, ${el.z}px)`,
+                width: el.w,
+                height: el.h,
+              }}
+              >
+                {/* 3D Cube Faces */}
+                <div className="absolute inset-0 bg-cyan-500/20 border border-cyan-400" style={{ transform: `translateZ(${el.d / 2}px)` }} />
+                <div className="absolute inset-0 bg-cyan-700/80 border border-cyan-500" style={{ transform: `translateZ(${-el.d / 2}px)` }} />
+                <div className="absolute top-0 left-0 bg-cyan-600/50 border border-cyan-400" style={{ width: el.w, height: el.d, transform: `translateY(${-el.d / 2}px) rotateX(90deg)` }} />
+                <div className="absolute bottom-0 left-0 bg-cyan-600/50 border border-cyan-400" style={{ width: el.w, height: el.d, transform: `translateY(${el.h - el.d / 2}px) rotateX(-90deg)` }} />
+                <div className="absolute top-0 left-0 bg-cyan-800/50 border border-cyan-400" style={{ width: el.d, height: el.h, transform: `translateX(${-el.d / 2}px) rotateY(-90deg)` }} />
+                <div className="absolute top-0 right-0 bg-cyan-800/50 border border-cyan-400" style={{ width: el.d, height: el.h, transform: `translateX(${el.d / 2}px) rotateY(90deg)` }} />
               </div>
-              <div className="absolute inset-0 bg-cyan-900/40 border border-cyan-500" style={{ transform: `translateZ(${-el.d / 2}px) rotateY(180deg)` }}></div>
-              <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: el.d, height: el.h, marginLeft: -el.d / 2, marginTop: -el.h / 2, transform: `rotateY(-90deg) translateZ(${el.w / 2}px)` }}></div>
-              <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: el.d, height: el.h, marginLeft: -el.d / 2, marginTop: -el.h / 2, transform: `rotateY(90deg) translateZ(${el.w / 2}px)` }}></div>
-              <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: el.w, height: el.d, marginLeft: -el.w / 2, marginTop: -el.d / 2, transform: `rotateX(90deg) translateZ(${el.h / 2}px)` }}></div>
-              <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: el.w, height: el.d, marginLeft: -el.w / 2, marginTop: -el.d / 2, transform: `rotateX(-90deg) translateZ(${el.h / 2}px)` }}></div>
             </motion.div>
           ))}
         </motion.div>
@@ -523,8 +513,12 @@ const InteractiveModelBuilder = () => {
           {elements.map((el) => {
             const analysisValue = (Math.random() * 500).toFixed(1);
             const analysisType = Math.random() > 0.5 ? 'Shear: ' : 'Moment: ';
-            const screenX = 150 + el.x + el.w / 2 + 20;
+
+            // Calculate absolute screen position tracking the object across its rotY
+            const angY = rotY * (Math.PI / 180);
+            const screenX = 150 + (el.x * Math.cos(-angY) + el.z * Math.sin(-angY)) + el.w / 2 + 20;
             const screenY = 150 + el.y - el.h / 2 - 20;
+
             return (
               <motion.div
                 key={`ui-${el.id}`}
@@ -779,8 +773,8 @@ export default function App() {
               transition={{ duration: 0.8 }}
               className="max-w-4xl"
             >
-              <div className="mb-8 w-24 h-24 md:w-32 md:h-32 relative overflow-hidden">
-                <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-full h-full object-cover" />
+              <div className="mb-8 w-24 h-24 md:w-32 md:h-32 relative logo-glitch overflow-hidden border-2 border-cyan-500/80">
+                <img src="/algo-pixel/algo-pixel-logo.jpg" alt="Algo Pixel Logo" className="w-full h-full object-contain" />
               </div>
 
               <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-cyan-950/30 border-l-2 border-cyan-500 text-cyan-400 font-mono text-xs tracking-widest uppercase mb-6">
@@ -788,30 +782,18 @@ export default function App() {
                 <span>Civil & Structure Analysis | Graphic Design | AI Automation</span>
               </div>
 
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-cyan-500/80 mb-2 leading-none uppercase">
-                <AlgoText text="ALGO PIXEL EMPIRE" delay={300} />
-              </h1>
-              <h2 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter text-white mb-6 leading-none uppercase drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                <span>
-                  <AlgoText text="JOSEPH CHEAH" delay={800} />
+              <div className="mb-2">
+                <span className="font-mono text-lg md:text-2xl font-bold tracking-widest text-cyan-400 uppercase bg-cyan-900/20 px-4 py-2 border border-cyan-500/30">
+                  <AlgoText text="Joseph Cheah" delay={300} />
                 </span>
+              </div>
+              <h2 className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter text-white mb-6 leading-[0.9] uppercase">
+                <AlgoText text="Algo Pixel Empire" delay={800} />
               </h2>
 
               <p className="text-base md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl font-light border-l border-white/10 pl-4">
                 Our expertise lies in using computational automation to accelerate structural engineering while maintaining the aesthetic precision required for modern design.
               </p>
-
-              <div className="flex flex-col gap-6 font-mono text-sm">
-                <div className="flex flex-wrap gap-4">
-                  <SafeInteractiveButton
-                    url="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
-                    text="Work With Algo Pixel Now"
-                  />
-                </div>
-
-                {/* Safe Social Links will be mounted here */}
-                <SafeSocialLinks />
-              </div>
             </motion.div>
 
             {/* Interactive Model Builder Decoration */}
@@ -838,29 +820,28 @@ export default function App() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4 flex items-center gap-2">
-                  <Braces className="w-4 h-4" /> 01 // Data-To-Solution Protocol
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-6 uppercase">
-                  The Bridge Between Logic & Aesthetics
-                </h2>
-                <div className="space-y-6 text-slate-400 font-light text-lg">
-                  <p>
-                    Modern engineering suffers from massive repetitive friction. We eliminate it by connecting powerful analytical models like ETABS and SAFE to custom pipeline automations and AI.
-                  </p>
-                  <p>
-                    As a Civil & Structural Engineer with 4+ years of experience specializing in high-rise design and water supply systems, I operate at the intersection of <strong className="text-white">Structural Engineering, Computational Design, and AI Automation</strong>.
-                  </p>
-                </div>
+                <div className="font-mono text-cyan-500 text-sm tracking-widest">01 // Data-To-Solution Protocol</div>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase">The Bridge Between Logic & Aesthetics</h2>
+                <p className="text-slate-400 text-lg leading-relaxed font-light">
+                  Modern engineering suffers from massive repetitive friction. We eliminate it by connecting powerful analytical models like ETABS and SAFE to custom pipeline automations and AI.
+                </p>
 
-                <div className="flex gap-8 pt-4 border-t border-cyan-900/30">
-                  <div>
-                    <div className="text-3xl font-black text-cyan-400 mb-1">30%</div>
-                    <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">Faster Modeling</div>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-10 mt-12 border-t border-cyan-900/30 pt-8">
+                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
+                    <div className="text-4xl font-black text-white mb-1 font-mono">30<span className="text-cyan-500">%</span></div>
+                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Faster Modeling</div>
                   </div>
-                  <div>
-                    <div className="text-3xl font-black text-cyan-400 mb-1">80%</div>
-                    <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">Design Automation</div>
+                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
+                    <div className="text-4xl font-black text-white mb-1 font-mono">40<span className="text-cyan-500">%</span></div>
+                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Design Faster with Algorithm</div>
+                  </div>
+                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
+                    <div className="text-4xl font-black text-white mb-1 font-mono">10<span className="text-cyan-500">+</span></div>
+                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Water Supply Approvals</div>
+                  </div>
+                  <div className="border border-cyan-500/20 bg-cyan-950/10 p-4 hover:border-cyan-500/50 transition-colors">
+                    <div className="text-4xl font-black text-white mb-1 font-mono">1<span className="text-cyan-500">st</span></div>
+                    <div className="text-xs text-cyan-600 font-mono uppercase tracking-widest">Class Honors Civil Eng.</div>
                   </div>
                 </div>
               </motion.div>
