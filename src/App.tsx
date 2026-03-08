@@ -211,54 +211,70 @@ const StructBlock = ({ el }: { el: StructElement; key?: React.Key }) => {
   const analysisType = React.useMemo(() => Math.random() > 0.5 ? 'Shear: ' : 'Moment: ', []);
 
   return (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 0.9 }}
-      className="absolute left-1/2 top-1/2"
-      style={{
-        width: w, height: h,
-        marginLeft: -w / 2, marginTop: -h / 2,
-        transform: `translate3d(${x}px, ${y}px, ${z}px)`,
-        transformStyle: 'preserve-3d'
-      }}
-    >
-      {/* Front */}
-      <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center overflow-hidden mix-blend-screen" style={{ transform: `translateZ(${d / 2}px)` }}>
-        <span className="text-[8px] font-black tracking-widest font-mono text-white/70 uppercase">{type}</span>
-      </div>
-      {/* Back */}
-      <div className="absolute inset-0 bg-cyan-900/40 border border-cyan-500" style={{ transform: `translateZ(${-d / 2}px) rotateY(180deg)` }}></div>
-      {/* Left */}
-      <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(-90deg) translateZ(${w / 2}px)` }}></div>
-      {/* Right */}
-      <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(90deg) translateZ(${w / 2}px)` }}></div>
-      {/* Top */}
-      <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }}></div>
-      {/* Bottom */}
-      <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(-90deg) translateZ(${h / 2}px)` }}></div>
+    <>
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.9 }}
+        className="absolute left-1/2 top-1/2"
+        style={{
+          width: w, height: h,
+          marginLeft: -w / 2, marginTop: -h / 2,
+          transform: `translate3d(${x}px, ${y}px, ${z}px)`,
+          transformStyle: 'preserve-3d'
+        }}
+      >
+        {/* Front */}
+        <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center overflow-hidden mix-blend-screen" style={{ transform: `translateZ(${d / 2}px)` }}>
+          <span className="text-[8px] font-black tracking-widest font-mono text-white/70 uppercase">{type}</span>
+        </div>
+        {/* Back */}
+        <div className="absolute inset-0 bg-cyan-900/40 border border-cyan-500" style={{ transform: `translateZ(${-d / 2}px) rotateY(180deg)` }}></div>
+        {/* Left */}
+        <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(-90deg) translateZ(${w / 2}px)` }}></div>
+        {/* Right */}
+        <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(90deg) translateZ(${w / 2}px)` }}></div>
+        {/* Top */}
+        <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }}></div>
+        {/* Bottom */}
+        <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(-90deg) translateZ(${h / 2}px)` }}></div>
+      </motion.div>
 
-      {/* Analysis UI tag with a leg */}
-      <div className="absolute right-[-40px] top-[-40px] w-[80px] bg-[#020617] border border-cyan-400 p-1 shadow-lg" style={{ transform: 'translateZ(10px) rotateY(-45deg)' }}>
-        <div className="absolute bottom-[-20px] left-[-20px] w-[30px] h-[1px] bg-cyan-400 rotate-45 transform origin-top-left pointer-events-none"></div>
-        <div className="text-[6px] font-mono text-cyan-300 whitespace-nowrap">
-          {analysisType} {analysisValue}kN{analysisType === 'Moment: ' ? 'm' : ''}
+      {/* Analysis UI tag with a leg (Rendered outside preserving 3D rotation so it faces camera) */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className="absolute left-1/2 top-1/2 z-50 pointer-events-none"
+        style={{
+          transform: `translate3d(calc(${x}px + ${w / 2 + 30}px), calc(${y}px - ${h / 2 + 50}px), 0)`,
+        }}
+      >
+        <div className="relative w-[100px] bg-[#020617]/90 backdrop-blur-sm border border-cyan-400 p-1.5 shadow-lg">
+          <div className="absolute bottom-[-20px] left-[-20px] w-[35px] h-[1px] bg-cyan-400 rotate-45 transform origin-top-left pointer-events-none"></div>
+          <div className="text-[10px] font-mono text-cyan-300 whitespace-nowrap font-bold">
+            {analysisType} {analysisValue}kN{analysisType === 'Moment: ' ? 'm' : ''}
+          </div>
+          <div className="w-full h-1 mt-1 bg-cyan-900/50">
+            <div className="h-full bg-cyan-400" style={{ width: `${Math.random() * 100}%` }}></div>
+          </div>
         </div>
-        <div className="w-full h-1 mt-1 bg-cyan-900/50">
-          <div className="h-full bg-cyan-400" style={{ width: `${Math.random() * 100}%` }}></div>
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 
 // Interactive 3D Voxel Builder Component
 const InteractiveModelBuilder = () => {
   const [elements, setElements] = useState<StructElement[]>([]);
-  const [message, setMessage] = useState("DRAG TO DRAW AN OBJECT HERE");
+  const [message, setMessage] = useState("DRAG TO DRAW SLAB/FOOTING. CLICK POINTS FOR BEAM/COLUMN.");
   const [isFading, setIsFading] = useState(false);
 
   const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
   const [dragCurrent, setDragCurrent] = useState<{ x: number, y: number } | null>(null);
+
+  // Track clicking points instead of dragging for beams/columns
+  const [firstPoint, setFirstPoint] = useState<{ x: number, y: number } | null>(null);
+
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [rotX, setRotX] = useState(0);
@@ -311,6 +327,8 @@ const InteractiveModelBuilder = () => {
     e.currentTarget.setPointerCapture(e.pointerId);
     e.preventDefault();
     const coords = getCoords(e.clientX, e.clientY);
+
+    // Set both drag and click points to see what user intends to do
     setDragStart(coords);
     setDragCurrent(coords);
   };
@@ -331,59 +349,93 @@ const InteractiveModelBuilder = () => {
       return;
     }
 
-    const dx = dragCurrent.x - dragStart.x;
-    const dy = dragCurrent.y - dragStart.y;
-    const cx = dragStart.x + dx / 2;
-    const cy = dragStart.y + dy / 2;
-    const tempZ = (Math.random() - 0.5) * 100; // place at random depth
-
-    let type: 'beam' | 'column' | 'slab' | 'node' = 'node';
-    let w = 20, h = 20, d = 20;
-
+    const coords = getCoords(e.clientX, e.clientY);
+    const dx = coords.x - dragStart.x;
+    const dy = coords.y - dragStart.y;
     const absDx = Math.abs(dx);
     const absDy = Math.abs(dy);
 
-    if (absDx > 40 && absDy > 40) {
-      type = 'slab';
-      w = absDx;
-      h = absDy;
-      d = 10;
-    } else if (absDx > 40 && absDy <= 40) {
-      type = 'beam';
-      w = absDx;
-      h = 16;
-      d = 16;
-    } else if (absDy > 40 && absDx <= 40) {
-      type = 'column';
-      w = 16;
-      h = absDy;
-      d = 16;
+    // Detect if this was a click (very small movement)
+    const isClick = absDx < 5 && absDy < 5;
+
+    // Convert screen coordinates to world coordinates by rotating backward against current rotY
+    const angY = rotY * (Math.PI / 180);
+    const getWorldPoint = (screenX: number, screenY: number, z: number) => ({
+      x: screenX * Math.cos(angY) + z * Math.sin(angY),
+      y: screenY,
+      z: -screenX * Math.sin(angY) + z * Math.cos(angY)
+    });
+
+    if (isClick) {
+      // Logic for 2-point clicking (Beams & Columns)
+      if (!firstPoint) {
+        setFirstPoint(coords);
+      } else {
+        // We have a second point, draw the beam/col between them
+        const cdx = coords.x - firstPoint.x;
+        const cdy = coords.y - firstPoint.y;
+        const screenCx = firstPoint.x + cdx / 2;
+        const screenCy = firstPoint.y + cdy / 2;
+        const tempZ = (Math.random() - 0.5) * 100;
+
+        let type: 'beam' | 'column' = Math.abs(cdx) > Math.abs(cdy) ? 'beam' : 'column';
+        let w = type === 'beam' ? Math.max(Math.abs(cdx), 20) : 16;
+        let h = type === 'column' ? Math.max(Math.abs(cdy), 20) : 16;
+
+        const wp = getWorldPoint(screenCx, screenCy, tempZ);
+
+        setElements(prev => [...prev, {
+          id: Date.now() + Math.random(),
+          type, ...wp, w, h, d: 16
+        }]);
+
+        if (message.includes("DRAG")) {
+          setMessage("INJECTING STRUCTURAL ELEMENTS...");
+        }
+
+        setFirstPoint(null); // reset for next line
+      }
     } else {
-      type = 'node';
-      w = 16;
-      h = 16;
-      d = 16;
-    }
+      // It was a drag: Logic for Area drawing (Slabs / Footings)
+      const screenCx = dragStart.x + dx / 2;
+      const screenCy = dragStart.y + dy / 2;
+      const tempZ = (Math.random() - 0.5) * 100;
 
-    if (message === "DRAG TO DRAW AN OBJECT HERE") {
-      setMessage("INJECTING STRUCTURAL ELEMENTS...");
-    }
+      let type: 'slab' | 'node' = 'node';
+      let w = 20, h = 20, d = 20;
 
-    setElements(prev => [...prev, {
-      id: Date.now() + Math.random(),
-      type, x: cx, y: cy, z: tempZ, w, h, d
-    }]);
+      if (absDx > 20 && absDy > 20) {
+        type = 'slab';
+        w = absDx;
+        h = absDy;
+        d = 10;
+      }
+
+      if (type === 'slab') {
+        if (message.includes("DRAG")) {
+          setMessage("INJECTING STRUCTURAL ELEMENTS...");
+        }
+
+        const wp = getWorldPoint(screenCx, screenCy, tempZ);
+
+        setElements(prev => [...prev, {
+          id: Date.now() + Math.random(),
+          type, ...wp, w, h, d
+        }]);
+        setFirstPoint(null); // Clear any partial click states
+      }
+    }
 
     setDragStart(null);
     setDragCurrent(null);
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto">
+    <div className="relative w-full h-full flex flex-col items-center justify-start pointer-events-auto">
       {/* 3D Container */}
       <div
         ref={containerRef}
-        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-hidden"
+        className="w-[350px] h-[350px] md:w-[450px] md:h-[450px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-visible"
         style={{ perspective: '1000px', touchAction: 'none' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -391,8 +443,24 @@ const InteractiveModelBuilder = () => {
         onPointerCancel={handlePointerUp}
         onDragStart={(e) => e.preventDefault()}
       >
-        {/* Draw Preview overlay */}
-        {dragStart && dragCurrent && (
+        {/* Point Preview Overlay */}
+        {firstPoint && (
+          <div className="absolute w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_#00ffcc] pointer-events-none z-50 mix-blend-screen"
+            style={{ left: `calc(50% + ${firstPoint.x - 4}px)`, top: `calc(50% + ${firstPoint.y - 4}px)` }}></div>
+        )}
+
+        {firstPoint && dragCurrent && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-40 opacity-50 mix-blend-screen">
+            <line
+              x1={`calc(50% + ${firstPoint.x}px)`} y1={`calc(50% + ${firstPoint.y}px)`}
+              x2={`calc(50% + ${dragCurrent.x}px)`} y2={`calc(50% + ${dragCurrent.y}px)`}
+              stroke="#00ffcc" strokeWidth="2" strokeDasharray="4 4"
+            />
+          </svg>
+        )}
+
+        {/* Draw Preview overlay (Only render if dragging a volume, not just clicking) */}
+        {dragStart && dragCurrent && Math.abs(dragCurrent.x - dragStart.x) > 5 && Math.abs(dragCurrent.y - dragStart.y) > 5 && (
           <div
             className="absolute border-2 border-cyan-400 border-dashed bg-cyan-400/20 z-50 mix-blend-screen pointer-events-none"
             style={{
@@ -423,11 +491,60 @@ const InteractiveModelBuilder = () => {
           <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateX(90deg) translateZ(100px)' }}></div>
           <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateY(90deg) translateZ(100px)' }}></div>
 
-          {/* User-added elements */}
+          {/* User-added elements (rendered inside rotating space) */}
           {elements.map((el) => (
-            <StructBlock key={el.id} el={el} />
+            <motion.div
+              key={el.id}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.9 }}
+              className="absolute left-1/2 top-1/2"
+              style={{
+                width: el.w, height: el.h,
+                marginLeft: -el.w / 2, marginTop: -el.h / 2,
+                transform: `translate3d(${el.x}px, ${el.y}px, ${el.z}px)`,
+                transformStyle: 'preserve-3d'
+              }}
+            >
+              <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center mix-blend-screen" style={{ transform: `translateZ(${el.d / 2}px)` }}>
+                <span className="text-[8px] font-black tracking-widest font-mono text-white/70 uppercase">{el.type}</span>
+              </div>
+              <div className="absolute inset-0 bg-cyan-900/40 border border-cyan-500" style={{ transform: `translateZ(${-el.d / 2}px) rotateY(180deg)` }}></div>
+              <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: el.d, height: el.h, marginLeft: -el.d / 2, marginTop: -el.h / 2, transform: `rotateY(-90deg) translateZ(${el.w / 2}px)` }}></div>
+              <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: el.d, height: el.h, marginLeft: -el.d / 2, marginTop: -el.h / 2, transform: `rotateY(90deg) translateZ(${el.w / 2}px)` }}></div>
+              <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: el.w, height: el.d, marginLeft: -el.w / 2, marginTop: -el.d / 2, transform: `rotateX(90deg) translateZ(${el.h / 2}px)` }}></div>
+              <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: el.w, height: el.d, marginLeft: -el.w / 2, marginTop: -el.d / 2, transform: `rotateX(-90deg) translateZ(${el.h / 2}px)` }}></div>
+            </motion.div>
           ))}
         </motion.div>
+
+        {/* 2D Analysis Overlays decoupled from rotation so text isnt cropped heavily either */}
+        <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
+          {elements.map((el) => {
+            const analysisValue = (el.h * el.w * 0.1).toFixed(1);
+            const analysisType = el.type === 'column' ? 'Axial: ' : el.type === 'beam' ? 'Moment: ' : 'Shear: ';
+            const screenX = 150 + el.x + el.w / 2 + 20;
+            const screenY = 150 + el.y - el.h / 2 - 20;
+            return (
+              <motion.div
+                key={`ui-${el.id}`}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute z-[100]"
+                style={{ left: screenX, top: screenY }}
+              >
+                <div className="relative w-[100px] bg-[#020617]/90 backdrop-blur-sm border border-cyan-400 p-1 shadow-lg">
+                  <div className="absolute bottom-[-15px] left-[-15px] w-[20px] h-[1px] bg-cyan-400 -rotate-45 transform origin-top-left pointer-events-none"></div>
+                  <div className="text-[8px] font-mono text-cyan-300 whitespace-nowrap font-bold">
+                    {analysisType} {analysisValue}kN{analysisType === 'Moment: ' ? 'm' : ''}
+                  </div>
+                  <div className="w-full h-1 mt-1 bg-cyan-900/50">
+                    <div className="h-full bg-cyan-400" style={{ width: `${Math.random() * 100}%` }}></div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Interactive Message Display */}
@@ -435,7 +552,7 @@ const InteractiveModelBuilder = () => {
         key={message}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`mt-8 font-mono text-sm tracking-widest text-center ${isFading ? 'text-cyan-300 font-bold' : 'text-cyan-600'}`}
+        className={`mt-12 font-mono text-sm tracking-widest text-center px-4 ${isFading ? 'text-cyan-300 font-bold' : 'text-cyan-600'}`}
       >
         {message}
       </motion.div>
@@ -455,10 +572,18 @@ const AntiPhishPuzzleModal = ({
   targetUrl: string
 }) => {
   const [clickedNodes, setClickedNodes] = useState<number[]>([]);
-  const requiredNodes = [0, 4, 8]; // Diagonal nodes
+  const [requiredNodes, setRequiredNodes] = useState<number[]>([0, 4, 8]); // Default
 
   useEffect(() => {
-    if (isOpen) setClickedNodes([]);
+    if (isOpen) {
+      setClickedNodes([]);
+      // Generate a random pattern of 3 distinct nodes when modal opens
+      const nodes = new Set<number>();
+      while (nodes.size < 3) {
+        nodes.add(Math.floor(Math.random() * 9));
+      }
+      setRequiredNodes(Array.from(nodes));
+    }
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -486,10 +611,10 @@ const AntiPhishPuzzleModal = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-[#020617] border border-cyan-500 max-w-md w-full p-6 md:p-8 relative"
+        className="bg-[#020617] border border-cyan-500 max-w-md w-full p-6 md:p-8 relative pointer-events-auto"
       >
-        <button onClick={onClose} className="absolute right-4 top-4 text-slate-500 hover:text-white">
-          <X className="w-5 h-5" />
+        <button onClick={() => onClose()} className="absolute right-4 top-4 text-slate-500 hover:text-white z-50 p-2 cursor-pointer">
+          <X className="w-5 h-5 pointer-events-none" />
         </button>
 
         <div className="flex items-center gap-3 mb-6">
@@ -498,7 +623,7 @@ const AntiPhishPuzzleModal = ({
         </div>
 
         <p className="text-sm text-slate-400 mb-6 font-light">
-          Verify human structural intelligence: Click the <strong className="text-cyan-400">3 diagonal load-bearing nodes</strong> (top-left, center, bottom-right) to establish a secure connection.
+          Verify human structural intelligence: Establish a neural connection by clicking the <strong className="text-cyan-400">3 highlighted active nodes</strong>.
         </p>
 
         <div className="grid grid-cols-3 gap-4 mb-6 relative p-6 border border-cyan-900/50 bg-black/50">
@@ -512,7 +637,8 @@ const AntiPhishPuzzleModal = ({
               className={`w-12 h-12 md:w-16 md:h-16 mx-auto rounded-full border-2 transition-all relative z-10 flex items-center justify-center
                 ${clickedNodes.includes(i)
                   ? requiredNodes.includes(i) ? 'bg-cyan-500 border-cyan-400' : 'bg-red-500 border-red-400'
-                  : 'bg-[#020617] border-cyan-800 hover:border-cyan-400'}`}
+                  : 'bg-[#020617] border-cyan-800 hover:border-cyan-400'}
+                ${!clickedNodes.includes(i) && requiredNodes.includes(i) ? 'shadow-[0_0_15px_rgba(0,255,204,0.3)] border-dashed border-cyan-500/50' : ''}`}
             >
               {clickedNodes.includes(i) && (
                 <div className="w-4 h-4 bg-white rounded-full"></div>
@@ -532,6 +658,35 @@ const AntiPhishPuzzleModal = ({
         </div>
       </motion.div>
     </div>
+  );
+};
+
+const SafeInteractiveButton = ({ url, text }: { url: string, text: string }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleSuccess = (finalUrl: string) => {
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setModalOpen(true)}
+        className="group relative px-8 py-4 bg-cyan-500 text-black font-bold uppercase tracking-wider overflow-hidden w-full sm:w-auto text-center"
+      >
+        <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+        <span className="relative z-10 font-mono flex items-center justify-center gap-2">
+          <Terminal className="w-4 h-4" /> {text}
+        </span>
+      </button>
+
+      <AntiPhishPuzzleModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleSuccess}
+        targetUrl={url}
+      />
+    </>
   );
 };
 
@@ -604,6 +759,7 @@ export default function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="w-14 h-14 relative flex items-center justify-center cursor-pointer overflow-hidden rounded-sm bg-gradient-to-b from-white via-white/80 to-[#020617]"
+              style={{ maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
             >
               <img
                 src="/algo-pixel/algo-pixel-logo.jpg"
@@ -747,8 +903,8 @@ export default function App() {
                   <div className="w-full h-full relative overflow-hidden bg-cyan-950/20">
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,204,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,204,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
                     <img
-                      src="/algo-pixel/profile-photo.jpg"
-                      alt="Joseph Cheah"
+                      src="/algo-pixel/architect_modeling_holo.png"
+                      alt="Joseph Cheah Modeling Hologram"
                       className="w-full h-full object-cover opacity-90 mix-blend-lighten scale-105 hover:scale-100 transition-transform duration-700 filter contrast-125"
                     />
                     <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(2,6,23,0.9)]" />
@@ -854,19 +1010,23 @@ export default function App() {
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* SERVICE 1 */}
-              <motion.a
-                href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer"
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group block"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Building2 className="w-24 h-24 text-cyan-500" />
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.01</div>
                   <h3 className="text-2xl font-black text-white mb-3 uppercase">Structural Modelling & Analysis</h3>
+
+                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
+                    <img src="/algo-pixel/service_1.png" alt="Structural Modeling" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
+                  </div>
+
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     High-rise RC/PT building design, fluid dynamic systems, and full Eurocode/BS Standards compliance modeling across Revit, ETABS, and SAFE environments.
                   </p>
@@ -875,7 +1035,12 @@ export default function App() {
                     <span className="border border-cyan-500/30 px-2 py-1">Revit BIM</span>
                   </div>
                 </div>
-              </motion.a>
+                <div className="mt-8 pt-6 border-t border-cyan-900/30">
+                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                    Request This Service
+                  </a>
+                </div>
+              </motion.div>
 
               {/* SERVICE 2 */}
               <motion.div
@@ -883,21 +1048,31 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Code2 className="w-24 h-24 text-cyan-500" />
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.02</div>
                   <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom AutoLISP</h3>
+
+                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
+                    <img src="/algo-pixel/service_2.png" alt="AutoLISP Scripting" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
+                  </div>
+
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    High-velocity computational scripts engineered to map ETABS physics analysis directly to AutoCAD drafting nodes. Accelerating deployment models by 80%.
+                    High-velocity computational scripts engineered to map ETABS physics analysis directly to AutoCAD drafting nodes. Accelerating deployment models by 40%.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">AutoLISP</span>
                     <span className="border border-cyan-500/30 px-2 py-1">Automation</span>
                   </div>
+                </div>
+                <div className="mt-8 pt-6 border-t border-cyan-900/30">
+                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                    Request This Service
+                  </a>
                 </div>
               </motion.div>
 
@@ -906,14 +1081,19 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Database className="w-24 h-24 text-cyan-500" />
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.03</div>
                   <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom Spreadsheet</h3>
+
+                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
+                    <img src="/algo-pixel/service_3.png" alt="Spreadsheet Tools" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
+                  </div>
+
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     Automated Excel-based computation matrices for rapid shearwall and corewall design iterations. Reducing standard design loop latency by 40%.
                   </p>
@@ -921,6 +1101,11 @@ export default function App() {
                     <span className="border border-cyan-500/30 px-2 py-1">Excel VBA</span>
                     <span className="border border-cyan-500/30 px-2 py-1">Struct. Matrix</span>
                   </div>
+                </div>
+                <div className="mt-8 pt-6 border-t border-cyan-900/30">
+                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                    Request This Service
+                  </a>
                 </div>
               </motion.div>
 
@@ -930,14 +1115,19 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col justify-between"
+                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Terminal className="w-24 h-24 text-cyan-500" />
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.04</div>
                   <h3 className="text-2xl font-black text-white mb-3 uppercase">Research and Analysis</h3>
+
+                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
+                    <img src="/algo-pixel/service_4.png" alt="Research & Data" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
+                  </div>
+
                   <p className="text-slate-400 text-sm leading-relaxed mb-4 font-light max-w-sm">
                     In-depth technical analysis spanning structural behavior, digital transformations, and experimental data extrapolation.
                   </p>
@@ -945,12 +1135,39 @@ export default function App() {
                   <div className="mt-4 p-4 border border-cyan-500/30 bg-black/50">
                     <div className="font-mono text-cyan-600 text-[10px] uppercase tracking-widest mb-1">Published Paper [2025]</div>
                     <h4 className="text-xs font-bold text-white uppercase mb-2 leading-tight">Numerical Modeling of Cold-Formed Steel Section Performance in Fire</h4>
-                    <button className="whitespace-nowrap px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black bg-cyan-500 hover:bg-cyan-400 transition-colors">
+                    <button className="whitespace-nowrap px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-black border border-cyan-500 hover:bg-cyan-500 hover:text-black text-cyan-400 transition-colors">
                       Mount Document
                     </button>
                   </div>
                 </div>
+                <div className="mt-8 pt-6 border-t border-cyan-900/30">
+                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                    Request This Service
+                  </a>
+                </div>
               </motion.div>
+
+              {/* SERVICE 5 CUSTOM */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="lg:col-span-2 border border-dashed border-cyan-500/50 bg-[#020617]/50 p-8 hover:border-cyan-400 hover:bg-cyan-950/20 transition-colors relative group flex flex-col items-center justify-center text-center"
+              >
+                <div className="mb-6 relative">
+                  <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                  <Cpu className="w-16 h-16 text-cyan-400 relative z-10" />
+                </div>
+                <div className="font-mono text-cyan-500 mb-2">// SERVICE.05</div>
+                <h3 className="text-3xl font-black text-white mb-4 uppercase">Custom Architecture</h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-2xl">
+                  Require a bespoke solution outside standard parameters? We build custom AI software workflows, deeply integrated automation logic, and unique digital infrastructure tailored purely to your project's unique physics.
+                </p>
+                <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block px-12 py-4 font-mono text-sm font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  Request Custom Service
+                </a>
+              </motion.div>
+
             </div>
           </div>
         </section>
@@ -958,21 +1175,24 @@ export default function App() {
         {/* Contact Module */}
         <footer id="contact" className="py-24 px-6 relative overflow-hidden">
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid lg:grid-cols-2 gap-16 border border-cyan-900/50 bg-[#020617] p-12 lg:p-16">
-              <div>
+            <div className="grid lg:grid-cols-2 gap-16 border border-cyan-900/50 bg-[#020617] p-12 lg:p-16 relative overflow-hidden group">
+              <div className="absolute inset-0 z-0">
+                <img src="/algo-pixel/communication_pixel.png" alt="Working Together" className="w-full h-full object-cover opacity-20 filter grayscale mix-blend-screen group-hover:opacity-40 transition-opacity duration-700" />
+              </div>
+              <div className="relative z-10">
                 <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4 flex items-center gap-2">
                   <div className="w-2 h-2 bg-cyan-500 animate-pulse"></div> 04 // Handshake Protocol
                 </div>
                 <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6 uppercase">Open Comm <br />Channel</h2>
-                <p className="text-lg text-slate-400 mb-10 max-w-md font-light">
+                <p className="text-lg text-slate-300 mb-10 max-w-md font-light bg-black/40 p-4 border-l-2 border-cyan-500 backdrop-blur-md">
                   Ready to deploy high-velocity engineering automations or mandate massive structural blueprints?
                 </p>
                 <SafeSocialLinks />
               </div>
             </div>
 
-            <div className="mt-8 flex flex-col md:flex-row items-center justify-between font-mono text-[10px] text-cyan-700 uppercase tracking-widest">
-              <p>ALGO PIXEL EMPIRE © {new Date().getFullYear()} // JOSEPH CHEAH. JM1041472-M</p>
+            <div className="mt-8 flex flex-col md:flex-row items-center justify-between font-mono text-[10px] md:text-xs text-cyan-600 uppercase tracking-widest">
+              <p>ALGO PIXEL EMPIRE © {new Date().getFullYear()} // JOSEPH CHEAH. <span className="font-bold text-cyan-400">MALAYSIA REGISTERED COMPANY JM1041472-M</span></p>
               <div className="flex gap-4 mt-4 md:mt-0">
                 <span>[ENG]</span>
                 <span>[MGR]</span>
