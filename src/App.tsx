@@ -193,12 +193,60 @@ const InteractiveStructuralBackground = () => {
   );
 };
 
+// Component for rendering individual 3D Structural Elements
+type StructElement = {
+  id: number;
+  type: string;
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+  h: number;
+  d: number;
+};
+
+const StructBlock = ({ el }: { el: StructElement; key?: React.Key }) => {
+  const { w, h, d, x, y, z, type } = el;
+  return (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 0.9 }}
+      className="absolute left-1/2 top-1/2"
+      style={{
+        width: w, height: h,
+        marginLeft: -w / 2, marginTop: -h / 2,
+        transform: `translate3d(${x}px, ${y}px, ${z}px)`,
+        transformStyle: 'preserve-3d'
+      }}
+    >
+      {/* Front */}
+      <div className="absolute inset-0 bg-cyan-700/40 border-2 border-cyan-400 flex items-center justify-center overflow-hidden mix-blend-screen" style={{ transform: `translateZ(${d / 2}px)` }}>
+        <span className="text-[8px] font-black tracking-widest font-mono text-white/70 uppercase">{type}</span>
+      </div>
+      {/* Back */}
+      <div className="absolute inset-0 bg-cyan-900/40 border border-cyan-500" style={{ transform: `translateZ(${-d / 2}px) rotateY(180deg)` }}></div>
+      {/* Left */}
+      <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(-90deg) translateZ(${w / 2}px)` }}></div>
+      {/* Right */}
+      <div className="absolute left-1/2 top-1/2 bg-cyan-800/40 border border-cyan-400" style={{ width: d, height: h, marginLeft: -d / 2, marginTop: -h / 2, transform: `rotateY(90deg) translateZ(${w / 2}px)` }}></div>
+      {/* Top */}
+      <div className="absolute left-1/2 top-1/2 bg-cyan-500/50 border-2 border-cyan-300" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }}></div>
+      {/* Bottom */}
+      <div className="absolute left-1/2 top-1/2 bg-[#020617]/80 border border-cyan-700" style={{ width: w, height: d, marginLeft: -w / 2, marginTop: -d / 2, transform: `rotateX(-90deg) translateZ(${h / 2}px)` }}></div>
+    </motion.div>
+  );
+};
+
 // Interactive 3D Voxel Builder Component
 const InteractiveModelBuilder = () => {
-  const [cubes, setCubes] = useState<{ x: number, y: number, z: number, id: number }[]>([]);
+  const [elements, setElements] = useState<StructElement[]>([]);
   const [message, setMessage] = useState("DRAG TO DRAW AN OBJECT HERE");
   const [isFading, setIsFading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+
+  const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
+  const [dragCurrent, setDragCurrent] = useState<{ x: number, y: number } | null>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
   const [rotX, setRotX] = useState(0);
   const [rotY, setRotY] = useState(0);
 
@@ -206,8 +254,8 @@ const InteractiveModelBuilder = () => {
   useEffect(() => {
     let animationId: number;
     const animate = () => {
-      setRotX(prev => prev + 0.2);
-      setRotY(prev => prev + 0.5);
+      setRotX(prev => prev + 0.3);
+      setRotY(prev => prev + 0.6);
       animationId = requestAnimationFrame(animate);
     };
     animate();
@@ -216,7 +264,7 @@ const InteractiveModelBuilder = () => {
 
   // 8 Second Timer Logic
   useEffect(() => {
-    if (cubes.length === 0) return;
+    if (elements.length === 0) return;
 
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
@@ -225,7 +273,7 @@ const InteractiveModelBuilder = () => {
       setTimeout(() => {
         setMessage("BUT LET ALGO PIXEL DO IT FOR YOU.");
         setTimeout(() => {
-          setCubes([]);
+          setElements([]);
           setIsFading(false);
           setMessage("DRAG TO DRAW AN OBJECT HERE");
         }, 3000);
@@ -233,67 +281,95 @@ const InteractiveModelBuilder = () => {
     }, 8000); // 8 seconds after first cube is placed
 
     return () => clearTimeout(fadeTimer);
-  }, [cubes.length === 0]); // Only trigger when we go from 0 to 1+
+  }, [elements.length === 0]); // Only trigger when we go from 0 to 1+
 
-  const addCube = (clientX: number, clientY: number) => {
-    if (isFading) return;
-    const target = document.getElementById('model-builder-container');
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-
-    // Map to a grid (-3 to 3 to have more density)
-    const x = Math.round(((clientX - rect.left) / rect.width - 0.5) * 6);
-    const y = Math.round(((clientY - rect.top) / rect.height - 0.5) * 6);
-
-    // Scale by 30px per block
-    const newCubeX = x * 30;
-    const newCubeY = y * 30;
-
-    setCubes(prev => {
-      // Prevent adding identical cubes in the same position
-      const isDuplicate = prev.some(c => c.x === newCubeX && c.y === newCubeY);
-      if (isDuplicate) return prev;
-
-      if (message === "DRAG TO DRAW AN OBJECT HERE") {
-        setMessage("INJECTING STRUCTURAL ELEMENTS...");
-      }
-
-      return [...prev, {
-        x: newCubeX,
-        y: newCubeY,
-        z: (Math.random() - 0.5) * 100,
-        id: Date.now() + Math.random()
-      }];
-    });
+  const getCoords = (clientX: number, clientY: number) => {
+    if (!containerRef.current) return { x: 0, y: 0 };
+    const rect = containerRef.current.getBoundingClientRect();
+    return {
+      x: clientX - rect.left - rect.width / 2,
+      y: clientY - rect.top - rect.height / 2
+    };
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isFading) return;
-    setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
-    // Prevent default to stop any text selection or native drag-and-drop
     e.preventDefault();
-    addCube(e.clientX, e.clientY);
+    const coords = getCoords(e.clientX, e.clientY);
+    setDragStart(coords);
+    setDragCurrent(coords);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isFading) return;
-    addCube(e.clientX, e.clientY);
+    if (!dragStart || isFading) return;
+    setDragCurrent(getCoords(e.clientX, e.clientY));
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    setIsDragging(false);
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
+
+    if (!dragStart || !dragCurrent || isFading) {
+      setDragStart(null);
+      setDragCurrent(null);
+      return;
+    }
+
+    const dx = dragCurrent.x - dragStart.x;
+    const dy = dragCurrent.y - dragStart.y;
+    const cx = dragStart.x + dx / 2;
+    const cy = dragStart.y + dy / 2;
+    const tempZ = (Math.random() - 0.5) * 100; // place at random depth
+
+    let type: 'beam' | 'column' | 'slab' | 'node' = 'node';
+    let w = 20, h = 20, d = 20;
+
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (absDx > 40 && absDy > 40) {
+      type = 'slab';
+      w = absDx;
+      h = absDy;
+      d = 10;
+    } else if (absDx > 40 && absDy <= 40) {
+      type = 'beam';
+      w = absDx;
+      h = 16;
+      d = 16;
+    } else if (absDy > 40 && absDx <= 40) {
+      type = 'column';
+      w = 16;
+      h = absDy;
+      d = 16;
+    } else {
+      type = 'node';
+      w = 16;
+      h = 16;
+      d = 16;
+    }
+
+    if (message === "DRAG TO DRAW AN OBJECT HERE") {
+      setMessage("INJECTING STRUCTURAL ELEMENTS...");
+    }
+
+    setElements(prev => [...prev, {
+      id: Date.now() + Math.random(),
+      type, x: cx, y: cy, z: tempZ, w, h, d
+    }]);
+
+    setDragStart(null);
+    setDragCurrent(null);
   };
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-auto">
       {/* 3D Container */}
       <div
-        id="model-builder-container"
-        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none"
+        ref={containerRef}
+        className="w-[300px] h-[300px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-hidden"
         style={{ perspective: '1000px', touchAction: 'none' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -301,6 +377,19 @@ const InteractiveModelBuilder = () => {
         onPointerCancel={handlePointerUp}
         onDragStart={(e) => e.preventDefault()}
       >
+        {/* Draw Preview overlay */}
+        {dragStart && dragCurrent && (
+          <div
+            className="absolute border-2 border-cyan-400 border-dashed bg-cyan-400/20 z-50 mix-blend-screen pointer-events-none"
+            style={{
+              left: `calc(50% + ${Math.min(dragStart.x, dragCurrent.x)}px)`,
+              top: `calc(50% + ${Math.min(dragStart.y, dragCurrent.y)}px)`,
+              width: `${Math.max(Math.abs(dragCurrent.x - dragStart.x), 4)}px`,
+              height: `${Math.max(Math.abs(dragCurrent.y - dragStart.y), 4)}px`,
+            }}
+          />
+        )}
+
         <div className="absolute top-2 left-2 font-mono text-[10px] text-cyan-400/50 pointer-events-none">
           X: {(rotX % 360).toFixed(1)}° <br />
           Y: {(rotY % 360).toFixed(1)}°
@@ -311,7 +400,7 @@ const InteractiveModelBuilder = () => {
 
         <motion.div
           animate={{ rotateX: rotX, rotateY: rotY }}
-          className={`w-full h-full absolute transition-opacity duration-1000 ${isFading ? 'opacity-0 scale-110 blur-md' : 'opacity-100'}`}
+          className={`w-full h-full absolute transition-all duration-1000 origin-center ${isFading ? 'opacity-0 scale-125 blur-xl' : 'opacity-100 scale-100'}`}
           style={{ transformStyle: 'preserve-3d' }}
         >
           {/* Base Structural Frame that always exists */}
@@ -320,24 +409,9 @@ const InteractiveModelBuilder = () => {
           <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateX(90deg) translateZ(100px)' }}></div>
           <div className="absolute top-0 left-0 w-full h-full border border-cyan-500/30" style={{ transform: 'rotateY(90deg) translateZ(100px)' }}></div>
 
-          {/* User-added cubes */}
-          {cubes.map((cube) => (
-            <motion.div
-              key={cube.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 0.8 }}
-              className="absolute left-1/2 top-1/2 w-[40px] h-[40px] -ml-[20px] -mt-[20px] border border-cyan-400 bg-cyan-500/20 backdrop-blur-sm"
-              style={{
-                transform: `translate3d(${cube.x}px, ${cube.y}px, ${cube.z}px)`,
-                transformStyle: 'preserve-3d'
-              }}
-            >
-              {/* Fake 3D edges for the cube */}
-              <div className="absolute inset-0 bg-cyan-400/20" style={{ transform: 'translateZ(20px)' }}></div>
-              <div className="absolute inset-0 bg-cyan-600/20" style={{ transform: 'translateZ(-20px)' }}></div>
-              <div className="absolute inset-0 bg-cyan-500/20 border-l border-cyan-300" style={{ transform: 'rotateY(90deg) translateZ(20px)' }}></div>
-              <div className="absolute inset-0 bg-cyan-500/20 border-r border-cyan-300" style={{ transform: 'rotateY(90deg) translateZ(-20px)' }}></div>
-            </motion.div>
+          {/* User-added elements */}
+          {elements.map((el) => (
+            <StructBlock key={el.id} el={el} />
           ))}
         </motion.div>
       </div>
