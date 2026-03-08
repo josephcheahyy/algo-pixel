@@ -420,7 +420,7 @@ const InteractiveModelBuilder = () => {
       {/* 3D Container */}
       <div
         ref={containerRef}
-        className="w-[350px] h-[350px] md:w-[450px] md:h-[450px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-visible"
+        className="w-[240px] h-[240px] md:w-[450px] md:h-[450px] relative cursor-crosshair border border-cyan-500/20 bg-cyan-900/5 group select-none overflow-visible"
         style={{ perspective: '1000px', touchAction: 'none' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -516,8 +516,8 @@ const InteractiveModelBuilder = () => {
 
             // Calculate absolute screen position tracking the object across its rotY
             const angY = rotY * (Math.PI / 180);
-            const screenX = 150 + (el.x * Math.cos(-angY) + el.z * Math.sin(-angY)) + el.w / 2 + 20;
-            const screenY = 150 + el.y - el.h / 2 - 20;
+            const offsetX = (el.x * Math.cos(-angY) + el.z * Math.sin(-angY)) + el.w / 2 + 20;
+            const offsetY = el.y - el.h / 2 - 20;
 
             return (
               <motion.div
@@ -525,7 +525,7 @@ const InteractiveModelBuilder = () => {
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute z-[100]"
-                style={{ left: screenX, top: screenY }}
+                style={{ left: `calc(50% + ${offsetX}px)`, top: `calc(50% + ${offsetY}px)` }}
               >
                 <div className="relative w-[100px] bg-[#020617]/90 backdrop-blur-sm border border-cyan-400 p-1 shadow-lg">
                   <div className="absolute bottom-[-15px] left-[-15px] w-[20px] h-[1px] bg-cyan-400 -rotate-45 transform origin-top-left pointer-events-none"></div>
@@ -974,14 +974,14 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
+                className="border border-cyan-900/50 bg-[#020617] p-5 md:p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Building2 className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.01</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Structural Modelling & Analysis</h3>
+                  <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Structural Modelling & Analysis</h3>
 
                   <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
                     <img src="/algo-pixel/service_1.png" alt="Structural Modeling" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
@@ -1008,14 +1008,14 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
+                className="border border-cyan-900/50 bg-[#020617] p-5 md:p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Code2 className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.02</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom AutoLISP</h3>
+                  <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Custom AutoLISP</h3>
 
                   <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
                     <img src="/algo-pixel/service_2.png" alt="AutoLISP Scripting" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
@@ -1041,14 +1041,14 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
+                className="border border-cyan-900/50 bg-[#020617] p-5 md:p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Database className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.03</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Custom Spreadsheet</h3>
+                  <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Custom Spreadsheet</h3>
 
                   <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
                     <img src="/algo-pixel/service_3.png" alt="Spreadsheet Tools" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
@@ -1075,14 +1075,14 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="border border-cyan-900/50 bg-[#020617] p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
+                className="border border-cyan-900/50 bg-[#020617] p-5 md:p-8 hover:border-cyan-500/50 transition-colors relative group flex flex-col"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity z-10">
                   <Terminal className="w-24 h-24 text-cyan-500" />
                 </div>
                 <div className="relative z-10 flex-1">
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.04</div>
-                  <h3 className="text-2xl font-black text-white mb-3 uppercase">Research and Analysis</h3>
+                  <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Research and Analysis</h3>
 
                   <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
                     <img src="/algo-pixel/service_4.png" alt="Research & Data" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
@@ -1112,14 +1112,14 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="lg:col-span-2 border border-dashed border-cyan-500/50 bg-[#020617]/50 p-8 hover:border-cyan-400 hover:bg-cyan-950/20 transition-colors relative group flex flex-col items-center justify-center text-center"
+                className="lg:col-span-2 border border-dashed border-cyan-500/50 bg-[#020617]/50 p-5 md:p-8 hover:border-cyan-400 hover:bg-cyan-950/20 transition-colors relative group flex flex-col items-center justify-center text-center"
               >
                 <div className="mb-6 relative">
                   <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                   <Cpu className="w-16 h-16 text-cyan-400 relative z-10" />
                 </div>
                 <div className="font-mono text-cyan-500 mb-2">// SERVICE.05</div>
-                <h3 className="text-3xl font-black text-white mb-4 uppercase">Custom Architecture</h3>
+                <h3 className="text-2xl md:text-3xl font-black text-white mb-4 uppercase">Custom Architecture</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-2xl">
                   Require a bespoke solution outside standard parameters? We build custom AI software workflows, deeply integrated automation logic, and unique digital infrastructure tailored purely to your project's unique physics.
                 </p>
