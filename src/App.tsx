@@ -99,7 +99,8 @@ const InteractiveStructuralBackground = () => {
         if (node.y < 0 || node.y > height) node.vy *= -1;
       });
 
-      ctx.lineWidth = 1;
+      // Make lines thicker for better visibility
+      ctx.lineWidth = 1.5;
 
       for (let i = 0; i < nodes.length; i++) {
         const nodeA = nodes[i];
@@ -109,12 +110,13 @@ const InteractiveStructuralBackground = () => {
         const dyMouse = nodeA.y - mouse.y;
         const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
 
-        if (distMouse < 250) {
+        // Increased interaction radius and much higher opacity
+        if (distMouse < 300) {
           ctx.beginPath();
           ctx.moveTo(nodeA.x, nodeA.y);
           ctx.lineTo(mouse.x, mouse.y);
-          // Stronger connection to the cursor
-          ctx.strokeStyle = `rgba(0, 255, 204, ${(1 - distMouse / 250) * 0.8})`;
+          // Very visible light cyan / white-ish cyan for mouse connections
+          ctx.strokeStyle = `rgba(100, 255, 255, ${(1 - distMouse / 300) * 1.2})`;
           ctx.stroke();
         }
 
@@ -129,17 +131,43 @@ const InteractiveStructuralBackground = () => {
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
-            ctx.strokeStyle = `rgba(0, 255, 204, ${(1 - dist / 150) * 0.25})`;
+            // Increased opacity from 0.25 to 0.6
+            ctx.strokeStyle = `rgba(0, 255, 204, ${(1 - dist / 150) * 0.6})`;
             ctx.stroke();
           }
         }
 
-        // Draw structural joint (node)
+        // Draw structural joint (node) - larger and brighter
         ctx.beginPath();
-        // Square joints for pixel aesthetic
-        ctx.rect(nodeA.x - 1.5, nodeA.y - 1.5, 3, 3);
-        ctx.fillStyle = 'rgba(0, 255, 204, 0.5)';
+        ctx.rect(nodeA.x - 2, nodeA.y - 2, 4, 4);
+        ctx.fillStyle = 'rgba(0, 255, 255, 0.8)';
         ctx.fill();
+      }
+
+      // Draw an algorithmic crosshair at the mouse position
+      if (mouse.x > -1000) {
+        ctx.beginPath();
+        // Crosshair Lines
+        ctx.moveTo(mouse.x - 10, mouse.y);
+        ctx.lineTo(mouse.x + 10, mouse.y);
+        ctx.moveTo(mouse.x, mouse.y - 10);
+        ctx.lineTo(mouse.x, mouse.y + 10);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Center pixel
+        ctx.beginPath();
+        ctx.rect(mouse.x - 2, mouse.y - 2, 4, 4);
+        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        ctx.fill();
+
+        // Outer targeting box
+        ctx.beginPath();
+        ctx.rect(mouse.x - 15, mouse.y - 15, 30, 30);
+        ctx.strokeStyle = 'rgba(0, 255, 204, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
 
       animationId = requestAnimationFrame(render);
