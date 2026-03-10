@@ -702,13 +702,11 @@ const SafeSocialLinks = () => {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
-
   const links = [
     { name: "Email", icon: <Mail className="w-5 h-5" />, url: "mailto:cheahyueyeou@gmail.com" },
     { name: "LinkedIn", icon: <Linkedin className="w-5 h-5" />, url: "https://www.linkedin.com/in/josephcheah-intj-generalist/" },
     { name: "WhatsApp", icon: <span className="font-bold text-xs uppercase">WA</span>, url: "https://wa.me/message/JRBZU4QQ2WBAK1" },
     { name: "Upwork", icon: <span className="font-bold text-xs uppercase">UP</span>, url: "https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share" },
-    { name: "Fiverr", icon: <span className="font-bold text-xs uppercase">FI</span>, url: "https://www.fiverr.com/s/qD173Wy" },
     { name: "GitHub", icon: <Github className="w-5 h-5" />, url: "https://github.com/josephcheahyy" },
   ];
 
@@ -797,10 +795,16 @@ export default function App() {
 
               <div className="flex flex-col gap-6 font-mono text-sm max-w-xl">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <SafeInteractiveButton
-                    url="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
-                    text="Work With Algo Pixel Now"
-                  />
+                  <a
+                    href="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share"
+                    target="_blank" rel="noopener noreferrer"
+                    className="group relative px-8 py-4 bg-cyan-500 text-black font-bold uppercase tracking-wider overflow-hidden w-full sm:w-auto text-center inline-block"
+                  >
+                    <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+                    <span className="relative z-10 font-mono flex items-center justify-center gap-2">
+                      <Terminal className="w-4 h-4" /> Work With Algo Pixel Now
+                    </span>
+                  </a>
                   <a href="#products" className="inline-block w-full sm:w-auto text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-cyan-400 border border-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors bg-cyan-950/20">
                     EXPLORE OUR SERVICES
                   </a>
@@ -1012,7 +1016,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/38Wxerx" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.upwork.com/services/product/design-a-full-set-of-residential-rc-design-report-and-3d-model-2029193254216635191?ref=project_share&tier=1" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1046,7 +1050,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/Eg7Lr9D" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.upwork.com/services/product/development-it-a-custom-request-autocad-lisp-script-for-specific-purpose-2031369421404053927?ref=project_share&tier=1" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1079,7 +1083,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/kLYa8Ro" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.upwork.com/services/product/development-it-a-custom-request-excel-spreadsheet-for-specific-purpose-2031362556780569573?ref=project_share&tier=1" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1117,7 +1121,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.upwork.com/services/product/writing-translation-a-research-and-analysis-report-with-proposed-solutions-2031375413253758514?ref=project_share&tier=1" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1139,7 +1143,7 @@ export default function App() {
                 <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-2xl">
                   Require a bespoke solution outside standard parameters? We build custom AI software workflows, deeply integrated automation logic, and unique digital infrastructure tailored purely to your project's unique physics.
                 </p>
-                <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block px-12 py-4 font-mono text-sm font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                <a href="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share" target="_blank" rel="noopener noreferrer" className="inline-block px-12 py-4 font-mono text-sm font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                   Request Custom Service
                 </a>
               </motion.div>
