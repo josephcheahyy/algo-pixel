@@ -1012,7 +1012,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.fiverr.com/s/38Wxerx" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1046,7 +1046,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.fiverr.com/s/Eg7Lr9D" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1079,7 +1079,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
-                  <a href="https://www.fiverr.com/s/qD173Wy" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
+                  <a href="https://www.fiverr.com/s/kLYa8Ro" target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
                     Request This Service
                   </a>
                 </div>
@@ -1144,6 +1144,36 @@ export default function App() {
                 </a>
               </motion.div>
 
+            </div>
+          </div>
+        </section>
+
+        {/* Gallery Section */}
+        <section id="gallery" className="py-24 px-6 border-y border-cyan-900/30 bg-[#020617]/80 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-16">
+              <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">Project Gallery</div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase mb-4">Visual Documentation</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="aspect-[4/3] border border-cyan-900/50 bg-[#020617] overflow-hidden relative group"
+                >
+                  <img
+                    src={`/algo-pixel/gallery_${i}.png`}
+                    alt={`Project Framework ${i}`}
+                    className="w-full h-full object-cover opacity-80 mix-blend-screen group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
