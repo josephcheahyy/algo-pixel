@@ -656,6 +656,173 @@ const AntiPhishPuzzleModal = ({
   );
 };
 
+// Image carousel for service cards
+const ServiceImageCarousel = ({ images, alt }: { images: string[], alt: string }) => {
+  const [current, setCurrent] = useState(0);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const startTimer = React.useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent(prev => (prev + 1) % images.length);
+    }, 4000);
+  }, [images.length]);
+
+  useEffect(() => {
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startTimer]);
+
+  const go = (dir: 1 | -1) => {
+    setCurrent(prev => (prev + dir + images.length) % images.length);
+    startTimer();
+  };
+
+  return (
+    <div
+      className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative group/car"
+      onMouseEnter={() => { if (timerRef.current) clearInterval(timerRef.current); }}
+      onMouseLeave={startTimer}
+    >
+      <div
+        className="flex h-full transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(calc(-${current} * (100% / ${images.length})))`, width: `${images.length * 100}%` }}
+      >
+        {images.map((src, i) => (
+          <img
+            key={i}
+            src={src}
+            alt={`${alt} ${i + 1}`}
+            className="h-full object-cover opacity-60 mix-blend-screen"
+            style={{ width: `${100 / images.length}%`, flexShrink: 0 }}
+          />
+        ))}
+      </div>
+
+      {/* Prev / Next */}
+      <button
+        onClick={() => go(-1)}
+        className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/60 border border-cyan-500/40 text-cyan-400 text-xs font-bold flex items-center justify-center opacity-0 group-hover/car:opacity-100 transition-opacity hover:bg-cyan-500 hover:text-black z-10"
+      >◀</button>
+      <button
+        onClick={() => go(1)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/60 border border-cyan-500/40 text-cyan-400 text-xs font-bold flex items-center justify-center opacity-0 group-hover/car:opacity-100 transition-opacity hover:bg-cyan-500 hover:text-black z-10"
+      >▶</button>
+
+      {/* Dots */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setCurrent(i); startTimer(); }}
+            className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-cyan-400 w-3' : 'bg-cyan-900 hover:bg-cyan-600'}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Gallery Lightbox Modal
+const GalleryModal = ({ images, startIndex, onClose }: { images: string[], startIndex: number, onClose: () => void }) => {
+  const [idx, setIdx] = useState(startIndex);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') setIdx(p => (p + 1) % images.length);
+      if (e.key === 'ArrowLeft') setIdx(p => (p - 1 + images.length) % images.length);
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [images.length, onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white border border-cyan-700 bg-black/80 hover:bg-cyan-500 hover:text-black transition-colors z-10"
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      <button
+        onClick={(e) => { e.stopPropagation(); setIdx(p => (p - 1 + images.length) % images.length); }}
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-cyan-400 border border-cyan-700 bg-black/80 hover:bg-cyan-500 hover:text-black transition-colors z-10 text-lg font-bold"
+      >◀</button>
+
+      <motion.img
+        key={idx}
+        src={images[idx]}
+        alt={`Gallery ${idx + 1}`}
+        initial={{ opacity: 0, scale: 0.95, filter: 'blur(8px)' }}
+        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.3 }}
+        className="max-w-[90vw] max-h-[85vh] object-contain border border-cyan-500/30 shadow-[0_0_80px_rgba(0,255,204,0.2)]"
+        onClick={(e) => e.stopPropagation()}
+      />
+
+      <button
+        onClick={(e) => { e.stopPropagation(); setIdx(p => (p + 1) % images.length); }}
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-cyan-400 border border-cyan-700 bg-black/80 hover:bg-cyan-500 hover:text-black transition-colors z-10 text-lg font-bold"
+      >▶</button>
+
+      <div className="absolute bottom-4 font-mono text-xs text-cyan-600 tracking-widest">{idx + 1} / {images.length}</div>
+    </motion.div>
+  );
+};
+
+const GallerySection = () => {
+  const galleryImages = Array.from({length: 24}, (_, i) => `/algo-pixel/projects/gallery_${i+1}.png`);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  return (
+    <section id="gallery" className="py-24 px-6 border-y border-cyan-900/30 bg-[#020617]/80 relative overflow-hidden">
+      {lightboxIdx !== null && (
+        <GalleryModal
+          images={galleryImages}
+          startIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-16">
+          <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">Project Gallery</div>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase mb-4">Visual Documentation</h2>
+          <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Click any image to view full screen</p>
+        </div>
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
+          {galleryImages.map((src, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: (i % 8) * 0.05 }}
+              className="break-inside-avoid border border-cyan-900/50 bg-[#020617] overflow-hidden relative group cursor-pointer"
+              onClick={() => setLightboxIdx(i)}
+            >
+              <img
+                src={src}
+                alt={`Project ${i + 1}`}
+                className="w-full object-cover opacity-70 mix-blend-screen group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute bottom-2 right-2 font-mono text-[9px] text-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity">[{String(i+1).padStart(2,'0')}]</div>
+              <div className="absolute inset-0 border-2 border-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const SafeInteractiveButton = ({ url, text }: { url: string, text: string }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -1003,9 +1170,10 @@ export default function App() {
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.01</div>
                   <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Structural Modelling & Analysis</h3>
 
-                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
-                    <img src="/algo-pixel/service_1.png" alt="Structural Modeling" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
-                  </div>
+                  <ServiceImageCarousel
+                    alt="Structural Modelling"
+                    images={[1,2,3,4,5].map(i => `/algo-pixel/projects/structural_${i}.png`)}
+                  />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     High-rise RC/PT building design, fluid dynamic systems, and full Eurocode/BS Standards compliance modeling across Revit, ETABS, and SAFE environments.
@@ -1037,9 +1205,10 @@ export default function App() {
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.02</div>
                   <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Custom AutoLISP</h3>
 
-                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
-                    <img src="/algo-pixel/service_2.png" alt="AutoLISP Scripting" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
-                  </div>
+                  <ServiceImageCarousel
+                    alt="Custom AutoLISP"
+                    images={[1,2,3,4,5].map(i => `/algo-pixel/projects/autolisp_${i}.png`)}
+                  />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     Custom automation routines directly reducing repetitive AutoCAD drafting tasks for consultants. Eliminates manual errors and accelerates drawing deployment natively.
@@ -1070,9 +1239,10 @@ export default function App() {
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.03</div>
                   <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Custom Spreadsheet</h3>
 
-                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
-                    <img src="/algo-pixel/service_3.png" alt="Spreadsheet Tools" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
-                  </div>
+                  <ServiceImageCarousel
+                    alt="Custom Spreadsheet"
+                    images={[1,2,3,4].map(i => `/algo-pixel/projects/spreadsheet_${i}.png`)}
+                  />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     Automated Excel-based computation matrices for rapid shearwall and corewall design iterations. Reducing standard design loop latency by 40%.
@@ -1104,9 +1274,10 @@ export default function App() {
                   <div className="font-mono text-cyan-500 mb-2">// SERVICE.04</div>
                   <h3 className="text-xl md:text-2xl font-black text-white mb-3 uppercase">Research and Analysis</h3>
 
-                  <div className="aspect-video w-full mb-6 border border-cyan-900/50 overflow-hidden relative">
-                    <img src="/algo-pixel/service_4.png" alt="Research & Data" className="w-full h-full object-cover opacity-60 mix-blend-screen scale-105 group-hover:scale-100 transition-transform duration-700" />
-                  </div>
+                  <ServiceImageCarousel
+                    alt="Research & Analysis"
+                    images={[1,2,3,4].map(i => `/algo-pixel/projects/research_${i}.png`)}
+                  />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
                     Integrated visual analysis. Streamlines massive engineering datasets matching complex physics loads instantly to safety checks into one concise decision matrix.
@@ -1143,9 +1314,10 @@ export default function App() {
                 <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-2xl">
                   Require a bespoke solution outside standard parameters? We build custom AI software workflows, deeply integrated automation logic, and unique digital infrastructure tailored purely to your project's unique physics.
                 </p>
-                <a href="https://www.upwork.com/freelancers/~0121759a0973715fb0?mp_source=share" target="_blank" rel="noopener noreferrer" className="inline-block px-12 py-4 font-mono text-sm font-bold uppercase tracking-wider text-black bg-cyan-400 hover:bg-white transition-colors">
-                  Request Custom Service
-                </a>
+                <SafeInteractiveButton
+                  url="https://wa.me/message/JRBZU4QQ2WBAK1"
+                  text="Request Custom Service"
+                />
               </motion.div>
 
             </div>
@@ -1153,34 +1325,7 @@ export default function App() {
         </section>
 
         {/* Gallery Section */}
-        <section id="gallery" className="py-24 px-6 border-y border-cyan-900/30 bg-[#020617]/80 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-16">
-              <div className="font-mono text-cyan-500 text-sm tracking-widest uppercase mb-4">Project Gallery</div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white uppercase mb-4">Visual Documentation</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="aspect-[4/3] border border-cyan-900/50 bg-[#020617] overflow-hidden relative group"
-                >
-                  <img
-                    src={`/algo-pixel/gallery_${i}.png`}
-                    alt={`Project Framework ${i}`}
-                    className="w-full h-full object-cover opacity-80 mix-blend-screen group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <GallerySection />
 
         {/* Contact Module */}
         <footer id="contact" className="py-24 px-6 relative overflow-hidden">
