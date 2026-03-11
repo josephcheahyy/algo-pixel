@@ -1176,11 +1176,19 @@ export default function App() {
                   />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    High-rise RC/PT building design, fluid dynamic systems, and full Eurocode/BS Standards compliance modeling across Revit, ETABS, and SAFE environments.
+                    High-rise RC/PT building design under Eurocode/BS Standards — from 3D parametric modelling in Tekla &amp; Revit through to full FEM analysis. Gravity/lateral load routing, connection design, detailing, and Tekla–Revit BIM integration with IFC workflows.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">ETABS / SAP2000</span>
                     <span className="border border-cyan-500/30 px-2 py-1">Revit BIM</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Tekla Structures</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Tekla–Revit Integration</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">3D Structural Modelling</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">IFC Export / Clash Detection</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">AutoCAD</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">SketchUp</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">MIDAS Civil/Gen</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">SAFE / AdaptPT</span>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
@@ -1211,11 +1219,15 @@ export default function App() {
                   />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    Custom automation routines directly reducing repetitive AutoCAD drafting tasks for consultants. Eliminates manual errors and accelerates drawing deployment natively.
+                    Bespoke AutoLISP programs targeting repetitive CAD workflows — auto-dimensioning, dynamic block generation, batch layer control, and direct ETABS-to-AutoCAD data pipelines. Zero manual re-entry, zero propagation errors.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">AutoLISP</span>
-                    <span className="border border-cyan-500/30 px-2 py-1">Automation</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">DCL Dialogs</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">AutoCAD API</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">VLISP / Visual LISP</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Batch Scripting</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">ETABS Integration</span>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
@@ -1245,11 +1257,15 @@ export default function App() {
                   />
 
                   <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    Automated Excel-based computation matrices for rapid shearwall and corewall design iterations. Reducing standard design loop latency by 40%.
+                    Engineered Excel workbooks with VBA macros and Python-powered backends — shearwall/corewall matrices, PT slab calculators, load takeoff sheets, and automated design report generators. Cut iteration cycles by 40%.
                   </p>
                   <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300">
                     <span className="border border-cyan-500/30 px-2 py-1">Excel VBA</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Python (openpyxl)</span>
                     <span className="border border-cyan-500/30 px-2 py-1">Struct. Matrix</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Eurocode Design</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">PT Slab / PT Beam</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Load Takeoff</span>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-cyan-900/30">
@@ -1279,9 +1295,17 @@ export default function App() {
                     images={[1,2,3,4].map(i => `/algo-pixel/projects/research_${i}.png`)}
                   />
 
-                  <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light max-w-sm">
-                    Integrated visual analysis. Streamlines massive engineering datasets matching complex physics loads instantly to safety checks into one concise decision matrix.
+                  <p className="text-slate-400 text-sm leading-relaxed mb-4 font-light max-w-sm">
+                    Numerical simulation, parametric studies, and peer-reviewed technical writing. From cold-formed steel fire performance to FEA calibration — engineering problems solved with data, not guesswork.
                   </p>
+                  <div className="flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-wider text-cyan-300 mb-4">
+                    <span className="border border-cyan-500/30 px-2 py-1">FEA / FEM</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">ABAQUS</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">MIDAS Civil</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Parametric Study</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Statistical Analysis</span>
+                    <span className="border border-cyan-500/30 px-2 py-1">Technical Writing</span>
+                  </div>
                   {/* Embedded Paper Block */}
                   <div className="mt-4 p-4 border border-cyan-500/30 bg-black/50">
                     <div className="font-mono text-cyan-600 text-[10px] uppercase tracking-widest mb-1">Published Paper [2025]</div>
