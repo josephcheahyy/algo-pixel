@@ -18,7 +18,7 @@ dist/
 dist-ssr/
 coverage/
 
-# Environment variables
+# Environment variables — NEVER commit these
 .env*
 !.env.example
 *.local
@@ -34,3 +34,22 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
+
+# ── Security: Credential and key files ─────────────────────────────────────
+# Block ANY file that might contain private keys or certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+# Google Cloud service account credentials
+*service-account*.json
+*serviceaccount*.json
+*credentials*.json
+# Private key files
+id_rsa
+id_ed25519
+id_ecdsa
+# Dev-only SW override (never deploy this)
+public/sw-dev.js

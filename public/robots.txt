@@ -1,0 +1,63 @@
+# robots.txt — Algo Pixel Empire
+# https://josephcheahyy.github.io/algo-pixel/
+
+# Allow legitimate search engine crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Block AI training scrapers and content harvesters
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Block aggressive scrapers and bad bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# All others: allow public pages, block raw assets
+User-agent: *
+Allow: /
+Disallow: /algo-pixel/assets/
+Disallow: /algo-pixel/projects/
+
+Crawl-delay: 10
+
+Sitemap: https://josephcheahyy.github.io/algo-pixel/sitemap.xml

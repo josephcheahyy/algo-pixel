@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build & Deploy to GitHub Pages
 
 on:
   push:
@@ -6,43 +6,83 @@ on:
       - main
       - master
 
+# Least-privilege: each job only gets the permissions it actually needs
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        # Pinned to SHA — prevents supply-chain attack if tag is force-pushed
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: 22
           cache: 'npm'
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
+
+      # ── Security: Scan source for accidentally committed secrets ──────────
+      - name: 🔐 Secret leak scan
+        run: |
+          echo "Scanning for leaked secrets in source files..."
+          # Fail build if GEMINI key format (AIzaSy...) is found in src/ or public/
+          if grep -rn --include="*.ts" --include="*.tsx" --include="*.js" --include="*.html" \
+               -E "(AIza[0-9A-Za-z\-_]{35}|GEMINI_API_KEY\s*=\s*\"[^\"]{10})" \
+               src/ public/ index.html 2>/dev/null; then
+            echo "❌ SECRET LEAK DETECTED — aborting build. Remove the key and rotate it immediately."
+            exit 1
+          fi
+          echo "✅ No secrets found in source files."
+
       - name: Build
         run: npm run build
+        env:
+          NODE_ENV: production
+          # GEMINI_API_KEY is intentionally NOT passed here.
+          # It must never appear in the client bundle.
+          # If you add a server-side proxy, pass it only to that service, not here.
+
+      # ── Security: Verify the built bundle contains no leaked secrets ──────
+      - name: 🔐 Post-build bundle audit
+        run: |
+          echo "Auditing production bundle for secret exposure..."
+          if grep -rn --include="*.js" --include="*.html" \
+               -E "AIza[0-9A-Za-z\-_]{35}" \
+               dist/ 2>/dev/null; then
+            echo "❌ API KEY FOUND IN BUNDLE — aborting deploy. This is a critical security issue."
+            exit 1
+          fi
+          echo "✅ Bundle is clean. No secrets detected."
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: ./dist
 
   deploy:
+    name: Deploy
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
     runs-on: ubuntu-latest
-    name: Deploy
+    # Deploy job needs write access to pages
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

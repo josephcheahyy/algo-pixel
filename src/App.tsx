@@ -312,7 +312,7 @@ const InteractiveModelBuilder = () => {
     }, 8000); // 8 seconds after first cube is placed
 
     return () => clearTimeout(fadeTimer);
-  }, [elements.length === 0]); // Only trigger when we go from 0 to 1+
+  }, [elements.length]); // SEC-FIX: was `elements.length === 0` (boolean, non-reactive). Now tracks length properly.
 
   const getCoords = (clientX: number, clientY: number) => {
     if (!containerRef.current) return { x: 0, y: 0 };
@@ -511,8 +511,12 @@ const InteractiveModelBuilder = () => {
         {/* 2D Analysis Overlays decoupled from rotation so text isnt cropped heavily either */}
         <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
           {elements.map((el) => {
-            const analysisValue = (Math.random() * 500).toFixed(1);
-            const analysisType = Math.random() > 0.5 ? 'Shear: ' : 'Moment: ';
+            // SEC-FIX: was Math.random() inline in JSX — fired every animation frame (60fps).
+            // useMemo is inside map so we use a stable closure over el.id instead.
+            // These are visual-only decorative values, so seeding from el.id is fine.
+            const seed = el.id % 1000;
+            const analysisValue = ((seed * 487) % 500).toFixed(1);
+            const analysisType = seed % 2 === 0 ? 'Shear: ' : 'Moment: ';
 
             // Calculate absolute screen position tracking the object across its rotY
             const angY = rotY * (Math.PI / 180);
@@ -533,7 +537,7 @@ const InteractiveModelBuilder = () => {
                     {analysisType} {analysisValue}kN{analysisType === 'Moment: ' ? 'm' : ''}
                   </div>
                   <div className="w-full h-1 mt-1 bg-cyan-900/50">
-                    <div className="h-full bg-cyan-400" style={{ width: `${Math.random() * 100}%` }}></div>
+                    <div className="h-full bg-cyan-400" style={{ width: `${((seed * 761) % 100).toFixed(1)}%` }}></div>
                   </div>
                 </div>
               </motion.div>
@@ -826,7 +830,21 @@ const GallerySection = () => {
 const SafeInteractiveButton = ({ url, text }: { url: string, text: string }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  // SEC-05: allowlist of domains this site legitimately links to.
+  // If anything other than these origins reaches onSuccess, it is blocked.
+  const ALLOWED_ORIGINS = [
+    'https://www.upwork.com',
+    'https://www.linkedin.com',
+    'https://github.com',
+    'https://wa.me',
+  ];
+
   const handleSuccess = (finalUrl: string) => {
+    const isAllowed = ALLOWED_ORIGINS.some(origin => finalUrl.startsWith(origin));
+    if (!isAllowed) {
+      console.warn('[SEC] Blocked navigation to non-allowlisted URL:', finalUrl);
+      return;
+    }
     window.open(finalUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -856,13 +874,32 @@ const SafeSocialLinks = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [targetUrl, setTargetUrl] = useState("");
 
+  // SEC-05: strict allowlist — only these origins can be opened after puzzle pass
+  const ALLOWED_ORIGINS = [
+    'mailto:cheahyueyeou@gmail.com',
+    'https://www.linkedin.com',
+    'https://wa.me',
+    'https://www.upwork.com',
+    'https://github.com',
+  ];
+
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     e.preventDefault();
+    const isAllowed = ALLOWED_ORIGINS.some(origin => url.startsWith(origin));
+    if (!isAllowed) {
+      console.warn('[SEC] Blocked navigation to non-allowlisted URL:', url);
+      return;
+    }
     setTargetUrl(url);
     setModalOpen(true);
   };
 
   const handleSuccess = (url: string) => {
+    const isAllowed = ALLOWED_ORIGINS.some(origin => url.startsWith(origin));
+    if (!isAllowed) {
+      console.warn('[SEC] Blocked post-puzzle navigation to non-allowlisted URL:', url);
+      return;
+    }
     if (url.startsWith('mailto:')) {
       window.location.href = url;
     } else {
