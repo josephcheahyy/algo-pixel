@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Prevent indexing of potentially sensitive paths or internal files (if any exist)
+Disallow: /admin/
+Disallow: /build/
+Disallow: /*?*
