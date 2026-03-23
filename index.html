@@ -3,60 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Algo Pixel Empire | Joseph Cheah — Civil & Structural Engineer, AI Automation</title>
-
-    <!-- ── SEO ─────────────────────────────────────────────────────────── -->
-    <meta name="description" content="Algo Pixel Empire — Joseph Cheah, Civil & Structural Engineer specialising in computational automation, structural analysis, and AI-driven engineering workflows." />
-    <meta name="author" content="Joseph Cheah" />
-    <meta property="og:title" content="Algo Pixel Empire | Joseph Cheah" />
-    <meta property="og:description" content="Civil & Structural Engineering × Computational Automation × AI" />
-    <meta property="og:type" content="website" />
-
-    <!-- ── Security Meta Tags ───────────────────────────────────────────── -->
-    <!-- Fallback headers for first-load before the Service Worker activates.
-         These are weaker than real HTTP headers but provide defence-in-depth. -->
-
-    <!-- Prevent MIME-type sniffing -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-
-    <!-- Block embedding in iframes (clickjacking prevention) -->
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-
-    <!-- Don't leak full URL in Referer when navigating to external links -->
-    <meta name="referrer" content="no-referrer-when-downgrade" />
-
-    <!-- Content Security Policy as a meta tag (real HTTP header via SW below) -->
-    <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+    <title>Algo Pixel Empire | Joseph Cheah</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-
-    <!-- ── Service Worker (real HTTP headers on subsequent loads) ─────── -->
-    <!--
-      The Service Worker intercepts navigations AFTER the first install and
-      injects the full set of security headers as real HTTP Response headers.
-      This plugs the gap that meta tags cannot fully cover (e.g. HSTS,
-      X-Frame-Options enforcement for nested browsing contexts).
-    -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker
-            .register('/algo-pixel/sw.js', { scope: '/algo-pixel/' })
-            .then(function (registration) {
-              // Force update check on every page load
-              registration.update();
-            })
-            .catch(function (err) {
-              // SW registration failure is non-fatal — the page still works,
-              // meta-tag headers still apply, and SEO is unaffected.
-              console.warn('[SW] Registration failed:', err);
-            });
-        });
-      }
-    </script>
   </body>
 </html>
 
