@@ -916,7 +916,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col">
               <span className="font-mono font-bold text-white text-lg leading-none tracking-tight">ALGO PIXEL EMPIRE</span>
-              <a href="https://www.linkedin.com/in/josephcheah-intj-generalist/" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] tracking-widest text-cyan-500 hover:text-cyan-300 transition-colors">JOSEPH CHEAH // FOUNDER</a>
+              <a href="https://www.linkedin.com/in/josephcheah-intj-generalist/" target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-3 font-mono text-[11px] font-black tracking-widest text-black bg-cyan-400 px-4 py-1.5 transition-all uppercase border border-white cursor-pointer relative group hover:bg-white hover:scale-105 hover:-translate-y-0.5 shadow-[0_0_15px_rgba(0,255,204,0.6)] hover:shadow-[0_0_30px_rgba(0,255,204,1)] rounded-sm"><span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-black"></span></span><span>JOSEPH CHEAH // FOUNDER</span><ArrowRight className="w-4 h-4 -ml-1 group-hover:translate-x-1 group-hover:text-cyan-600 transition-transform" /></a>
             </div>
           </div>
           <div className="hidden md:flex gap-8 text-xs font-mono tracking-widest text-cyan-600/70 uppercase">
